@@ -165,6 +165,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float scoreWaitDuration = 1.0f;
     [SerializeField] private float scoreFadeInDuration = 0.3f;
     [SerializeField] private float simultaneousButtonDelay = 0.05f;
+    [SerializeField] private float scoreAnimationDuration = 0.3f;
+    [SerializeField] private float scoreScaleMultiplier = 1.3f;
+    [SerializeField] private Color scoreHighlightColor = Color.yellow;
 
     [Header("Game State")]
     [SerializeField] private GameState currentState = GameState.Idle;
@@ -176,6 +179,8 @@ public class GameManager : MonoBehaviour
     private HashSet<ButtonColor> currentStepPressedButtons = new HashSet<ButtonColor>();
     private HighScoreData highScoreData = new HighScoreData();
     private string saveFilePath;
+    private Color scoreText2DOriginalColor;
+    private Vector3 scoreText2DOriginalScale;
 
     public GameState CurrentState => currentState;
     public int CurrentRound => currentRound;
@@ -191,6 +196,12 @@ public class GameManager : MonoBehaviour
             {
                 difficulty = loadedDifficulty;
             }
+        }
+
+        if (scoreText2D != null)
+        {
+            scoreText2DOriginalColor = scoreText2D.color;
+            scoreText2DOriginalScale = scoreText2D.transform.localScale;
         }
 
         saveFilePath = Path.Combine(Application.persistentDataPath, "highscores.json");
@@ -724,6 +735,7 @@ public class GameManager : MonoBehaviour
         if (scoreText2D != null)
         {
             scoreText2D.text = scoreString;
+            StartCoroutine(AnimateScoreTextCoroutine());
         }
 
         if (scoreTextUI != null)
@@ -732,6 +744,47 @@ public class GameManager : MonoBehaviour
         }
 
         UpdateHighScoreUI();
+    }
+
+    private IEnumerator AnimateScoreTextCoroutine()
+    {
+        if (scoreText2D == null) yield break;
+
+        Transform textTransform = scoreText2D.transform;
+        float elapsedTime = 0f;
+        float halfDuration = scoreAnimationDuration / 2f;
+
+        // Scale up and change color
+        while (elapsedTime < halfDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            float t = elapsedTime / halfDuration;
+
+            textTransform.localScale = Vector3.Lerp(scoreText2DOriginalScale, scoreText2DOriginalScale * scoreScaleMultiplier, t);
+            scoreText2D.color = Color.Lerp(scoreText2DOriginalColor, scoreHighlightColor, t);
+
+            yield return null;
+        }
+
+        textTransform.localScale = scoreText2DOriginalScale * scoreScaleMultiplier;
+        scoreText2D.color = scoreHighlightColor;
+
+        elapsedTime = 0f;
+
+        // Scale down and restore color
+        while (elapsedTime < halfDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            float t = elapsedTime / halfDuration;
+
+            textTransform.localScale = Vector3.Lerp(scoreText2DOriginalScale * scoreScaleMultiplier, scoreText2DOriginalScale, t);
+            scoreText2D.color = Color.Lerp(scoreHighlightColor, scoreText2DOriginalColor, t);
+
+            yield return null;
+        }
+
+        textTransform.localScale = scoreText2DOriginalScale;
+        scoreText2D.color = scoreText2DOriginalColor;
     }
 
     private void UpdateHighScoreUI()
