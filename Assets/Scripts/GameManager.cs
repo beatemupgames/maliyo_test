@@ -56,6 +56,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI highScoreTextUI;
     [SerializeField] private GameObject panelGameOver;
     [SerializeField] private GameObject panelScore;
+    [SerializeField] private TextMeshProUGUI panelScoreCurrentScoreText;
+    [SerializeField] private TextMeshProUGUI panelScoreBestScoreText;
+    [SerializeField] private TextMeshProUGUI panelScoreDifficultyText;
 
     [Header("Audio")]
     [SerializeField] private AudioSource audioSource;
@@ -425,6 +428,7 @@ public class GameManager : MonoBehaviour
 
         if (panelScore != null)
         {
+            UpdatePanelScoreUI();
             panelScore.SetActive(true);
             yield return StartCoroutine(FadeInPanelCoroutine(panelScore, scoreFadeInDuration));
         }
@@ -595,5 +599,24 @@ public class GameManager : MonoBehaviour
     public HighScoreData GetAllHighScores()
     {
         return highScoreData;
+    }
+
+    private void UpdatePanelScoreUI()
+    {
+        if (panelScoreCurrentScoreText != null)
+        {
+            panelScoreCurrentScoreText.text = playerScore.ToString();
+        }
+
+        if (panelScoreBestScoreText != null)
+        {
+            int bestScore = GetHighScoreForCurrentDifficulty();
+            panelScoreBestScoreText.text = bestScore.ToString();
+        }
+
+        if (panelScoreDifficultyText != null)
+        {
+            panelScoreDifficultyText.text = difficulty.ToString();
+        }
     }
 }
