@@ -14,7 +14,6 @@ public class SimonButton : MonoBehaviour
 
     private Vector3 originalScale;
     private Color originalColor;
-    private bool isActive = false;
 
     public GameManager.ButtonColor ButtonColor => buttonColor;
 
@@ -40,7 +39,7 @@ public class SimonButton : MonoBehaviour
 
     private void OnMouseDown()
     {
-        GameManager gameManager = FindObjectOfType<GameManager>();
+        GameManager gameManager = FindFirstObjectByType<GameManager>();
         if (gameManager != null && gameManager.CurrentState == GameManager.GameState.WaitingForPlayerInput)
         {
             gameManager.OnPlayerPressButton(buttonColor);
@@ -49,8 +48,6 @@ public class SimonButton : MonoBehaviour
 
     public void Activate()
     {
-        isActive = true;
-
         if (spriteRenderer != null)
         {
             spriteRenderer.color = originalColor * activeBrightness;
@@ -66,7 +63,6 @@ public class SimonButton : MonoBehaviour
 
     public void Deactivate()
     {
-        isActive = false;
         SetNormalState();
     }
 

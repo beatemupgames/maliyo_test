@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -16,6 +17,10 @@ public class GameManager : MonoBehaviour
 
     [Header("Button References")]
     [SerializeField] private SimonButton[] buttons = new SimonButton[4];
+
+    [Header("UI References")]
+    [SerializeField] private TextMeshPro scoreText3D;
+    [SerializeField] private TextMeshProUGUI scoreTextUI;
 
     [Header("Game Settings")]
     [SerializeField] private float timeBetweenButtons = 0.6f;
@@ -45,6 +50,7 @@ public class GameManager : MonoBehaviour
         playerScore = 0;
         currentState = GameState.Idle;
 
+        UpdateScoreUI();
         StartNextRound();
     }
 
@@ -115,11 +121,11 @@ public class GameManager : MonoBehaviour
     private void OnPlayerCorrect()
     {
         currentPlayerStep++;
-        playerScore += 10;
 
         if (currentPlayerStep >= sequence.Count)
         {
-            playerScore += currentRound * 5;
+            playerScore++;
+            UpdateScoreUI();
             StartNextRound();
         }
     }
@@ -177,6 +183,21 @@ public class GameManager : MonoBehaviour
         if (currentState == GameState.GameOver)
         {
             StartNewGame();
+        }
+    }
+
+    private void UpdateScoreUI()
+    {
+        string scoreString = playerScore.ToString();
+
+        if (scoreText3D != null)
+        {
+            scoreText3D.text = scoreString;
+        }
+
+        if (scoreTextUI != null)
+        {
+            scoreTextUI.text = scoreString;
         }
     }
 }

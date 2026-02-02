@@ -220,7 +220,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e27b7dab2e3740da96252a818100706, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buttonColor: 0
+  buttonColor: 3
   activeScale: 1.2
   activeBrightness: 1.5
   spriteRenderer: {fileID: 225895521}
