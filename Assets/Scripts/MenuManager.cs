@@ -30,7 +30,13 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip clickSound;
 
+    [Header("Slider Animation")]
+    [SerializeField] private float sliderSnapSpeed = 10f;
+
     private Difficulty currentDifficulty = Difficulty.Easy;
+    private bool isDraggingSlider = false;
+    private float targetSliderValue;
+    private bool isSnapping = false;
 
     private void Start()
     {
@@ -49,20 +55,91 @@ public class MenuManager : MonoBehaviour
         {
             difficultySlider.minValue = 0;
             difficultySlider.maxValue = 2;
-            difficultySlider.wholeNumbers = true;
+            difficultySlider.wholeNumbers = false; // Allow smooth movement
             difficultySlider.value = (int)currentDifficulty;
+            targetSliderValue = (int)currentDifficulty;
             difficultySlider.onValueChanged.AddListener(OnDifficultySliderChanged);
+
+            // Add event triggers for pointer down/up
+            UnityEngine.EventSystems.EventTrigger trigger = difficultySlider.gameObject.GetComponent<UnityEngine.EventSystems.EventTrigger>();
+            if (trigger == null)
+            {
+                trigger = difficultySlider.gameObject.AddComponent<UnityEngine.EventSystems.EventTrigger>();
+            }
+
+            // Pointer down event
+            UnityEngine.EventSystems.EventTrigger.Entry pointerDownEntry = new UnityEngine.EventSystems.EventTrigger.Entry();
+            pointerDownEntry.eventID = UnityEngine.EventSystems.EventTriggerType.PointerDown;
+            pointerDownEntry.callback.AddListener((data) => { OnSliderPointerDown(); });
+            trigger.triggers.Add(pointerDownEntry);
+
+            // Pointer up event
+            UnityEngine.EventSystems.EventTrigger.Entry pointerUpEntry = new UnityEngine.EventSystems.EventTrigger.Entry();
+            pointerUpEntry.eventID = UnityEngine.EventSystems.EventTriggerType.PointerUp;
+            pointerUpEntry.callback.AddListener((data) => { OnSliderPointerUp(); });
+            trigger.triggers.Add(pointerUpEntry);
         }
 
         // Update UI to reflect current difficulty
         UpdateDifficultyUI();
     }
 
+    private void Update()
+    {
+        // Smoothly snap to target value when not dragging
+        if (difficultySlider != null && isSnapping && !isDraggingSlider)
+        {
+            difficultySlider.value = Mathf.Lerp(difficultySlider.value, targetSliderValue, Time.deltaTime * sliderSnapSpeed);
+
+            // Stop snapping when close enough
+            if (Mathf.Abs(difficultySlider.value - targetSliderValue) < 0.01f)
+            {
+                difficultySlider.value = targetSliderValue;
+                isSnapping = false;
+            }
+        }
+    }
+
+    private void OnSliderPointerDown()
+    {
+        isDraggingSlider = true;
+        isSnapping = false;
+    }
+
+    private void OnSliderPointerUp()
+    {
+        isDraggingSlider = false;
+
+        // Snap to nearest value
+        if (difficultySlider != null)
+        {
+            targetSliderValue = Mathf.Round(difficultySlider.value);
+            isSnapping = true;
+
+            // Update difficulty based on snapped value
+            Difficulty newDifficulty = (Difficulty)(int)targetSliderValue;
+            if (newDifficulty != currentDifficulty)
+            {
+                currentDifficulty = newDifficulty;
+                UpdateDifficultyUI();
+                PlayClickSound();
+            }
+        }
+    }
+
     private void OnDifficultySliderChanged(float value)
     {
-        currentDifficulty = (Difficulty)(int)value;
-        UpdateDifficultyUI();
-        PlayClickSound();
+        // Update UI in real-time while dragging
+        if (isDraggingSlider)
+        {
+            Difficulty previewDifficulty = (Difficulty)Mathf.RoundToInt(value);
+            if (previewDifficulty != currentDifficulty)
+            {
+                currentDifficulty = previewDifficulty;
+                UpdateDifficultyUI();
+                PlayClickSound();
+            }
+        }
     }
 
     private void UpdateDifficultyUI()
