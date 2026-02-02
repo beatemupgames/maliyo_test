@@ -20,6 +20,7 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI difficultyText;
     [SerializeField] private Image difficultyIcon;
     [SerializeField] private Image handleInsideImage; // Reference to HandleInside
+    [SerializeField] private Button playButton; // Reference to Play button
     [SerializeField] private Sprite easyDifficultySprite;
     [SerializeField] private Sprite mediumDifficultySprite;
     [SerializeField] private Sprite hardDifficultySprite;
@@ -207,7 +208,7 @@ public class MenuManager : MonoBehaviour
 
     private void UpdateHandleColor()
     {
-        if (handleInsideImage == null || difficultySlider == null)
+        if (difficultySlider == null)
             return;
 
         float sliderValue = difficultySlider.value;
@@ -227,7 +228,22 @@ public class MenuManager : MonoBehaviour
             targetColor = Color.Lerp(mediumDifficultyColor, hardDifficultyColor, t);
         }
 
-        handleInsideImage.color = targetColor;
+        // Update HandleInside color
+        if (handleInsideImage != null)
+        {
+            handleInsideImage.color = targetColor;
+        }
+
+        // Update Play button color
+        if (playButton != null)
+        {
+            ColorBlock colors = playButton.colors;
+            colors.normalColor = targetColor;
+            colors.highlightedColor = targetColor * 1.1f; // Slightly brighter on hover
+            colors.pressedColor = targetColor * 0.8f; // Slightly darker when pressed
+            colors.selectedColor = targetColor;
+            playButton.colors = colors;
+        }
     }
 
     public void OnPlayButton()
