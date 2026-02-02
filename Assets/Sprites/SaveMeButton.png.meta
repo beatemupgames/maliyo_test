@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 5c9ce78d91ae14f8b85eddd2b30b2b06
+guid: 347763f98fc0f406bb80fe388759ef74
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -8066235573307005608
-    second: BluePiece_0
+      213: -8379774974024856619
+    second: SaveMeButton_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -110,7 +110,7 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
-    buildTarget: iOS
+    buildTarget: WebGL
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -123,7 +123,7 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
-    buildTarget: WebGL
+    buildTarget: iOS
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -139,13 +139,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: BluePiece_0
+      name: SaveMeButton_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 1202
-        height: 1196
+        width: 426
+        height: 133
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -154,8 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 855aa6a9b79fe0090800000000000000
-      internalID: -8066235573307005608
+      spriteID: 5db4a8f1f0f05bb80800000000000000
+      internalID: -8379774974024856619
       vertices: []
       indices: 
       edges: []
@@ -174,7 +174,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      BluePiece_0: -8066235573307005608
+      SaveMeButton_0: -8379774974024856619
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

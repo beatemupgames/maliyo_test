@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour
     [Header("UI References")]
     [SerializeField] private TextMeshPro scoreText2D;
     [SerializeField] private TextMeshProUGUI scoreTextUI;
+    [SerializeField] private GameObject panelGameOver;
 
     [Header("Audio")]
     [SerializeField] private AudioSource audioSource;
@@ -29,6 +30,7 @@ public class GameManager : MonoBehaviour
     [Header("Game Settings")]
     [SerializeField] private float timeBetweenButtons = 0.6f;
     [SerializeField] private float buttonPressDuration = 0.4f;
+    [SerializeField] private float gameOverFadeDuration = 0.3f;
 
     [Header("Game State")]
     [SerializeField] private GameState currentState = GameState.Idle;
@@ -43,6 +45,11 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        if (panelGameOver != null)
+        {
+            panelGameOver.SetActive(false);
+        }
+
         StartNewGame();
     }
 
@@ -53,6 +60,11 @@ public class GameManager : MonoBehaviour
         currentRound = 0;
         playerScore = 0;
         currentState = GameState.Idle;
+
+        if (panelGameOver != null)
+        {
+            panelGameOver.SetActive(false);
+        }
 
         UpdateScoreUI();
         StartNextRound();
@@ -171,6 +183,34 @@ public class GameManager : MonoBehaviour
 
             yield return new WaitForSeconds(0.3f);
         }
+
+        if (panelGameOver != null)
+        {
+            panelGameOver.SetActive(true);
+            yield return StartCoroutine(FadeInPanelCoroutine());
+        }
+    }
+
+    private IEnumerator FadeInPanelCoroutine()
+    {
+        CanvasGroup canvasGroup = panelGameOver.GetComponent<CanvasGroup>();
+
+        if (canvasGroup == null)
+        {
+            canvasGroup = panelGameOver.AddComponent<CanvasGroup>();
+        }
+
+        float elapsedTime = 0f;
+        canvasGroup.alpha = 0f;
+
+        while (elapsedTime < gameOverFadeDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            canvasGroup.alpha = Mathf.Lerp(0f, 1f, elapsedTime / gameOverFadeDuration);
+            yield return null;
+        }
+
+        canvasGroup.alpha = 1f;
     }
 
     private void ActivateButton(ButtonColor buttonColor)
