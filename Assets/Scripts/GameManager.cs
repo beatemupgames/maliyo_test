@@ -140,6 +140,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI panelScoreBestAllTimeText;
     [SerializeField] private TextMeshProUGUI panelScoreDifficultyText;
 
+    [Header("Game Elements to Fade")]
+    [SerializeField] private GameObject simonGameObject;
+
     [Header("Audio")]
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip gameOverSound;
@@ -226,6 +229,7 @@ public class GameManager : MonoBehaviour
             panelScore.SetActive(false);
         }
 
+        RestoreGameElementsAlpha();
         UpdateScoreUI();
         StartNextRound();
     }
@@ -537,6 +541,7 @@ public class GameManager : MonoBehaviour
                 audioSource.PlayOneShot(panelScoreSound);
             }
 
+            StartCoroutine(FadeOutGameElementsCoroutine(scoreFadeInDuration));
             yield return StartCoroutine(FadeInPanelCoroutine(panelScore, scoreFadeInDuration));
         }
     }
@@ -583,6 +588,133 @@ public class GameManager : MonoBehaviour
         }
 
         canvasGroup.alpha = 1f;
+    }
+
+    private IEnumerator FadeOutGameElementsCoroutine(float duration)
+    {
+        SpriteRenderer[] simonSpriteRenderers = null;
+        Color[] spriteOriginalColors = null;
+        TextMeshPro[] simonTextMeshPros = null;
+        Color[] textOriginalColors = null;
+
+        if (simonGameObject != null)
+        {
+            simonSpriteRenderers = simonGameObject.GetComponentsInChildren<SpriteRenderer>();
+            if (simonSpriteRenderers != null && simonSpriteRenderers.Length > 0)
+            {
+                spriteOriginalColors = new Color[simonSpriteRenderers.Length];
+                for (int i = 0; i < simonSpriteRenderers.Length; i++)
+                {
+                    spriteOriginalColors[i] = simonSpriteRenderers[i].color;
+                }
+            }
+
+            simonTextMeshPros = simonGameObject.GetComponentsInChildren<TextMeshPro>();
+            if (simonTextMeshPros != null && simonTextMeshPros.Length > 0)
+            {
+                textOriginalColors = new Color[simonTextMeshPros.Length];
+                for (int i = 0; i < simonTextMeshPros.Length; i++)
+                {
+                    textOriginalColors[i] = simonTextMeshPros[i].color;
+                }
+            }
+        }
+
+        float elapsedTime = 0f;
+
+        while (elapsedTime < duration)
+        {
+            elapsedTime += Time.deltaTime;
+            float alpha = Mathf.Lerp(1f, 0f, elapsedTime / duration);
+
+            if (simonSpriteRenderers != null && spriteOriginalColors != null)
+            {
+                for (int i = 0; i < simonSpriteRenderers.Length; i++)
+                {
+                    if (simonSpriteRenderers[i] != null)
+                    {
+                        Color color = spriteOriginalColors[i];
+                        color.a = alpha;
+                        simonSpriteRenderers[i].color = color;
+                    }
+                }
+            }
+
+            if (simonTextMeshPros != null && textOriginalColors != null)
+            {
+                for (int i = 0; i < simonTextMeshPros.Length; i++)
+                {
+                    if (simonTextMeshPros[i] != null)
+                    {
+                        Color color = textOriginalColors[i];
+                        color.a = alpha;
+                        simonTextMeshPros[i].color = color;
+                    }
+                }
+            }
+
+            yield return null;
+        }
+
+        if (simonSpriteRenderers != null && spriteOriginalColors != null)
+        {
+            for (int i = 0; i < simonSpriteRenderers.Length; i++)
+            {
+                if (simonSpriteRenderers[i] != null)
+                {
+                    Color color = spriteOriginalColors[i];
+                    color.a = 0f;
+                    simonSpriteRenderers[i].color = color;
+                }
+            }
+        }
+
+        if (simonTextMeshPros != null && textOriginalColors != null)
+        {
+            for (int i = 0; i < simonTextMeshPros.Length; i++)
+            {
+                if (simonTextMeshPros[i] != null)
+                {
+                    Color color = textOriginalColors[i];
+                    color.a = 0f;
+                    simonTextMeshPros[i].color = color;
+                }
+            }
+        }
+    }
+
+    private void RestoreGameElementsAlpha()
+    {
+        if (simonGameObject != null)
+        {
+            SpriteRenderer[] spriteRenderers = simonGameObject.GetComponentsInChildren<SpriteRenderer>();
+            if (spriteRenderers != null)
+            {
+                foreach (SpriteRenderer spriteRenderer in spriteRenderers)
+                {
+                    if (spriteRenderer != null)
+                    {
+                        Color color = spriteRenderer.color;
+                        color.a = 1f;
+                        spriteRenderer.color = color;
+                    }
+                }
+            }
+
+            TextMeshPro[] textMeshPros = simonGameObject.GetComponentsInChildren<TextMeshPro>();
+            if (textMeshPros != null)
+            {
+                foreach (TextMeshPro textMeshPro in textMeshPros)
+                {
+                    if (textMeshPro != null)
+                    {
+                        Color color = textMeshPro.color;
+                        color.a = 1f;
+                        textMeshPro.color = color;
+                    }
+                }
+            }
+        }
     }
 
     private void UpdateScoreUI()

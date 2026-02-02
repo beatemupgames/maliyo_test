@@ -1945,7 +1945,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -436, y: 741}
+  m_AnchoredPosition: {x: -436, y: 827}
   m_SizeDelta: {x: 438, y: 437}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &691256240
@@ -3361,7 +3361,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 147, y: 761.4}
+  m_AnchoredPosition: {x: 147, y: 847.4001}
   m_SizeDelta: {x: 816, y: 492}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1114779329
@@ -4652,7 +4652,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -162, y: 741}
+  m_AnchoredPosition: {x: -162, y: 827.00006}
   m_SizeDelta: {x: 815, y: 355}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1615545853
@@ -6035,6 +6035,7 @@ MonoBehaviour:
   panelScoreBestWeekText: {fileID: 1088850888}
   panelScoreBestAllTimeText: {fileID: 1291470251}
   panelScoreDifficultyText: {fileID: 1688587908}
+  simonGameObject: {fileID: 1532784419}
   audioSource: {fileID: 894645331}
   gameOverSound: {fileID: 8300000, guid: 6cdb0445bb50e4a88a24d5d1fa6c2024, type: 3}
   panelScoreSound: {fileID: 8300000, guid: c16d0c424eb204e6abed19b2038d815b, type: 3}
