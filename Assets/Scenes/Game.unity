@@ -4253,11 +4253,13 @@ MonoBehaviour:
   panelGameOver: {fileID: 706976540}
   audioSource: {fileID: 894645331}
   gameOverSound: {fileID: 8300000, guid: 6cdb0445bb50e4a88a24d5d1fa6c2024, type: 3}
+  difficulty: 1
   timeBetweenButtons: 0.6
   buttonPressDuration: 0.4
   gameOverFadeDuration: 0.3
+  simultaneousButtonDelay: 0.05
   currentState: 0
-  sequence: 
+  sequence: []
   currentPlayerStep: 0
   currentRound: 0
   playerScore: 0

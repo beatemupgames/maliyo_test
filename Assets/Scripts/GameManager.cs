@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using System.IO;
 
 public class GameManager : MonoBehaviour
 {
@@ -38,6 +39,14 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    [System.Serializable]
+    public class HighScoreData
+    {
+        public int easyHighScore = 0;
+        public int mediumHighScore = 0;
+        public int hardHighScore = 0;
+    }
+
     [Header("Button References")]
     [SerializeField] private SimonButton[] buttons = new SimonButton[4];
 
@@ -65,6 +74,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int playerScore = 0;
 
     private HashSet<ButtonColor> currentStepPressedButtons = new HashSet<ButtonColor>();
+    private HighScoreData highScoreData = new HighScoreData();
+    private string saveFilePath;
 
     public GameState CurrentState => currentState;
     public int CurrentRound => currentRound;
@@ -72,6 +83,9 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        saveFilePath = Path.Combine(Application.persistentDataPath, "highscores.json");
+        LoadHighScores();
+
         if (panelGameOver != null)
         {
             panelGameOver.SetActive(false);
@@ -279,6 +293,7 @@ public class GameManager : MonoBehaviour
     {
         currentState = GameState.GameOver;
         SetButtonsInteractable(false);
+        SaveHighScore();
         StartCoroutine(GameOverSequenceCoroutine());
         Debug.Log($"Game Over! Final Score: {playerScore}, Rounds Completed: {currentRound - 1}");
     }
@@ -404,5 +419,101 @@ public class GameManager : MonoBehaviour
         {
             scoreTextUI.text = scoreString;
         }
+    }
+
+    private void SaveHighScore()
+    {
+        bool newHighScore = false;
+
+        switch (difficulty)
+        {
+            case Difficulty.Easy:
+                if (playerScore > highScoreData.easyHighScore)
+                {
+                    highScoreData.easyHighScore = playerScore;
+                    newHighScore = true;
+                }
+                break;
+
+            case Difficulty.Medium:
+                if (playerScore > highScoreData.mediumHighScore)
+                {
+                    highScoreData.mediumHighScore = playerScore;
+                    newHighScore = true;
+                }
+                break;
+
+            case Difficulty.Hard:
+                if (playerScore > highScoreData.hardHighScore)
+                {
+                    highScoreData.hardHighScore = playerScore;
+                    newHighScore = true;
+                }
+                break;
+        }
+
+        if (newHighScore)
+        {
+            SaveHighScoresToDisk();
+            Debug.Log($"New High Score for {difficulty}! Score: {playerScore}");
+        }
+    }
+
+    private void SaveHighScoresToDisk()
+    {
+        try
+        {
+            string json = JsonUtility.ToJson(highScoreData, true);
+            File.WriteAllText(saveFilePath, json);
+            Debug.Log($"High scores saved to: {saveFilePath}");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Failed to save high scores: {e.Message}");
+        }
+    }
+
+    private void LoadHighScores()
+    {
+        try
+        {
+            if (File.Exists(saveFilePath))
+            {
+                string json = File.ReadAllText(saveFilePath);
+                highScoreData = JsonUtility.FromJson<HighScoreData>(json);
+                Debug.Log($"High scores loaded from: {saveFilePath}");
+                Debug.Log($"Easy: {highScoreData.easyHighScore}, Medium: {highScoreData.mediumHighScore}, Hard: {highScoreData.hardHighScore}");
+            }
+            else
+            {
+                Debug.Log("No save file found, starting with default high scores.");
+                highScoreData = new HighScoreData();
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Failed to load high scores: {e.Message}");
+            highScoreData = new HighScoreData();
+        }
+    }
+
+    public int GetHighScoreForCurrentDifficulty()
+    {
+        switch (difficulty)
+        {
+            case Difficulty.Easy:
+                return highScoreData.easyHighScore;
+            case Difficulty.Medium:
+                return highScoreData.mediumHighScore;
+            case Difficulty.Hard:
+                return highScoreData.hardHighScore;
+            default:
+                return 0;
+        }
+    }
+
+    public HighScoreData GetAllHighScores()
+    {
+        return highScoreData;
     }
 }
