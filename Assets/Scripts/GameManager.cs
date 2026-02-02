@@ -143,6 +143,8 @@ public class GameManager : MonoBehaviour
     [Header("Audio")]
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip gameOverSound;
+    [SerializeField] private AudioClip panelScoreSound;
+    [SerializeField] private AudioClip clickSound;
 
     [Header("Game Settings")]
     [SerializeField] private Difficulty difficulty = Difficulty.Medium;
@@ -500,6 +502,7 @@ public class GameManager : MonoBehaviour
     {
         if (currentState == GameState.GameOver)
         {
+            PlayClickSound();
             StartCoroutine(NoThanksSequenceCoroutine());
         }
     }
@@ -518,6 +521,12 @@ public class GameManager : MonoBehaviour
         {
             UpdatePanelScoreUI();
             panelScore.SetActive(true);
+
+            if (audioSource != null && panelScoreSound != null)
+            {
+                audioSource.PlayOneShot(panelScoreSound);
+            }
+
             yield return StartCoroutine(FadeInPanelCoroutine(panelScore, scoreFadeInDuration));
         }
     }
@@ -769,11 +778,21 @@ public class GameManager : MonoBehaviour
 
     public void OnHomeButton()
     {
+        PlayClickSound();
         SceneManager.LoadScene(menuSceneName);
     }
 
     public void OnPlayAgainButton()
     {
+        PlayClickSound();
         StartNewGame();
+    }
+
+    private void PlayClickSound()
+    {
+        if (audioSource != null && clickSound != null)
+        {
+            audioSource.PlayOneShot(clickSound);
+        }
     }
 }
