@@ -15,6 +15,29 @@ public class GameManager : MonoBehaviour
         GameOver
     }
 
+    public enum Difficulty
+    {
+        Easy,
+        Medium,
+        Hard
+    }
+
+    [System.Serializable]
+    public class SequenceStep
+    {
+        public List<ButtonColor> buttons = new List<ButtonColor>();
+
+        public SequenceStep(ButtonColor button)
+        {
+            buttons.Add(button);
+        }
+
+        public SequenceStep(List<ButtonColor> buttonList)
+        {
+            buttons = new List<ButtonColor>(buttonList);
+        }
+    }
+
     [Header("Button References")]
     [SerializeField] private SimonButton[] buttons = new SimonButton[4];
 
@@ -28,16 +51,20 @@ public class GameManager : MonoBehaviour
     [SerializeField] private AudioClip gameOverSound;
 
     [Header("Game Settings")]
+    [SerializeField] private Difficulty difficulty = Difficulty.Medium;
     [SerializeField] private float timeBetweenButtons = 0.6f;
     [SerializeField] private float buttonPressDuration = 0.4f;
     [SerializeField] private float gameOverFadeDuration = 0.3f;
+    [SerializeField] private float simultaneousButtonDelay = 0.05f;
 
     [Header("Game State")]
     [SerializeField] private GameState currentState = GameState.Idle;
-    [SerializeField] private List<ButtonColor> sequence = new List<ButtonColor>();
+    [SerializeField] private List<SequenceStep> sequence = new List<SequenceStep>();
     [SerializeField] private int currentPlayerStep = 0;
     [SerializeField] private int currentRound = 0;
     [SerializeField] private int playerScore = 0;
+
+    private HashSet<ButtonColor> currentStepPressedButtons = new HashSet<ButtonColor>();
 
     public GameState CurrentState => currentState;
     public int CurrentRound => currentRound;
@@ -80,8 +107,61 @@ public class GameManager : MonoBehaviour
 
     private void AddNewButtonToSequence()
     {
-        ButtonColor randomButton = (ButtonColor)Random.Range(0, 4);
-        sequence.Add(randomButton);
+        SequenceStep newStep;
+
+        switch (difficulty)
+        {
+            case Difficulty.Easy:
+                ButtonColor easyButton = GetRandomButtonForEasy();
+                newStep = new SequenceStep(easyButton);
+                break;
+
+            case Difficulty.Medium:
+                ButtonColor mediumButton = (ButtonColor)Random.Range(0, 4);
+                newStep = new SequenceStep(mediumButton);
+                break;
+
+            case Difficulty.Hard:
+                if (Random.value < 0.3f)
+                {
+                    List<ButtonColor> doubleButtons = new List<ButtonColor>();
+                    ButtonColor first = (ButtonColor)Random.Range(0, 4);
+                    ButtonColor second;
+                    do
+                    {
+                        second = (ButtonColor)Random.Range(0, 4);
+                    } while (second == first);
+
+                    doubleButtons.Add(first);
+                    doubleButtons.Add(second);
+                    newStep = new SequenceStep(doubleButtons);
+                }
+                else
+                {
+                    ButtonColor hardButton = (ButtonColor)Random.Range(0, 4);
+                    newStep = new SequenceStep(hardButton);
+                }
+                break;
+
+            default:
+                ButtonColor defaultButton = (ButtonColor)Random.Range(0, 4);
+                newStep = new SequenceStep(defaultButton);
+                break;
+        }
+
+        sequence.Add(newStep);
+    }
+
+    private ButtonColor GetRandomButtonForEasy()
+    {
+        int randomIndex = Random.Range(0, 3);
+        switch (randomIndex)
+        {
+            case 0: return ButtonColor.Blue;
+            case 1: return ButtonColor.Green;
+            case 2: return ButtonColor.Red;
+            default: return ButtonColor.Blue;
+        }
     }
 
     private IEnumerator ShowSequenceCoroutine()
@@ -91,15 +171,35 @@ public class GameManager : MonoBehaviour
 
         yield return new WaitForSeconds(0.5f);
 
-        foreach (ButtonColor button in sequence)
+        foreach (SequenceStep step in sequence)
         {
-            ActivateButton(button);
-            yield return new WaitForSeconds(buttonPressDuration);
-            DeactivateButton(button);
+            if (step.buttons.Count == 1)
+            {
+                ActivateButton(step.buttons[0]);
+                yield return new WaitForSeconds(buttonPressDuration);
+                DeactivateButton(step.buttons[0]);
+            }
+            else if (step.buttons.Count > 1)
+            {
+                foreach (ButtonColor button in step.buttons)
+                {
+                    ActivateButton(button);
+                    yield return new WaitForSeconds(simultaneousButtonDelay);
+                }
+
+                yield return new WaitForSeconds(buttonPressDuration - (simultaneousButtonDelay * step.buttons.Count));
+
+                foreach (ButtonColor button in step.buttons)
+                {
+                    DeactivateButton(button);
+                }
+            }
+
             yield return new WaitForSeconds(timeBetweenButtons - buttonPressDuration);
         }
 
         currentState = GameState.WaitingForPlayerInput;
+        currentStepPressedButtons.Clear();
         SetButtonsInteractable(true);
     }
 
@@ -131,12 +231,41 @@ public class GameManager : MonoBehaviour
 
     private bool CheckPlayerInput(ButtonColor buttonPressed)
     {
-        return buttonPressed == sequence[currentPlayerStep];
+        SequenceStep currentStep = sequence[currentPlayerStep];
+
+        if (currentStep.buttons.Count == 1)
+        {
+            return buttonPressed == currentStep.buttons[0];
+        }
+        else
+        {
+            if (currentStepPressedButtons.Contains(buttonPressed))
+            {
+                return false;
+            }
+
+            if (!currentStep.buttons.Contains(buttonPressed))
+            {
+                return false;
+            }
+
+            currentStepPressedButtons.Add(buttonPressed);
+
+            return true;
+        }
     }
 
     private void OnPlayerCorrect()
     {
+        SequenceStep currentStep = sequence[currentPlayerStep];
+
+        if (currentStep.buttons.Count > 1 && currentStepPressedButtons.Count < currentStep.buttons.Count)
+        {
+            return;
+        }
+
         currentPlayerStep++;
+        currentStepPressedButtons.Clear();
 
         if (currentPlayerStep >= sequence.Count)
         {
