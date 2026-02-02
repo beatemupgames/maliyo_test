@@ -5,7 +5,6 @@ using UnityEngine.UI;
 public class RoundedCorners : MonoBehaviour
 {
     [SerializeField] private float cornerRadius = 20f;
-    [SerializeField] private bool useImageResolution = true;
 
     private Image image;
     private Material material;
