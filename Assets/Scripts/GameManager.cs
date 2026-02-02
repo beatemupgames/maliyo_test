@@ -19,8 +19,12 @@ public class GameManager : MonoBehaviour
     [SerializeField] private SimonButton[] buttons = new SimonButton[4];
 
     [Header("UI References")]
-    [SerializeField] private TextMeshPro scoreText3D;
+    [SerializeField] private TextMeshPro scoreText2D;
     [SerializeField] private TextMeshProUGUI scoreTextUI;
+
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip gameOverSound;
 
     [Header("Game Settings")]
     [SerializeField] private float timeBetweenButtons = 0.6f;
@@ -134,7 +138,39 @@ public class GameManager : MonoBehaviour
     {
         currentState = GameState.GameOver;
         SetButtonsInteractable(false);
+        StartCoroutine(GameOverSequenceCoroutine());
         Debug.Log($"Game Over! Final Score: {playerScore}, Rounds Completed: {currentRound - 1}");
+    }
+
+    private IEnumerator GameOverSequenceCoroutine()
+    {
+        if (audioSource != null && gameOverSound != null)
+        {
+            audioSource.PlayOneShot(gameOverSound);
+        }
+
+        for (int i = 0; i < 2; i++)
+        {
+            foreach (SimonButton button in buttons)
+            {
+                if (button != null)
+                {
+                    button.ActivateGameOver();
+                }
+            }
+
+            yield return new WaitForSeconds(0.3f);
+
+            foreach (SimonButton button in buttons)
+            {
+                if (button != null)
+                {
+                    button.Deactivate();
+                }
+            }
+
+            yield return new WaitForSeconds(0.3f);
+        }
     }
 
     private void ActivateButton(ButtonColor buttonColor)
@@ -190,9 +226,9 @@ public class GameManager : MonoBehaviour
     {
         string scoreString = playerScore.ToString();
 
-        if (scoreText3D != null)
+        if (scoreText2D != null)
         {
-            scoreText3D.text = scoreString;
+            scoreText2D.text = scoreString;
         }
 
         if (scoreTextUI != null)

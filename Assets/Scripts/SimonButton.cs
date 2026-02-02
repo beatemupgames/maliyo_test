@@ -6,6 +6,7 @@ public class SimonButton : MonoBehaviour
     [SerializeField] private GameManager.ButtonColor buttonColor;
     [SerializeField] private float activeScale = 1.2f;
     [SerializeField] private float activeBrightness = 1.5f;
+    [SerializeField] private float gameOverBrightness = 3.0f;
 
     [Header("References")]
     [SerializeField] private SpriteRenderer spriteRenderer;
@@ -64,6 +65,16 @@ public class SimonButton : MonoBehaviour
     public void Deactivate()
     {
         SetNormalState();
+    }
+
+    public void ActivateGameOver()
+    {
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.color = originalColor * gameOverBrightness;
+        }
+
+        transform.localScale = originalScale * activeScale;
     }
 
     private void SetNormalState()
