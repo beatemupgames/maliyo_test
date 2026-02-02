@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -41,11 +42,84 @@ public class GameManager : MonoBehaviour
     }
 
     [System.Serializable]
+    public class ScoreEntry
+    {
+        public int score;
+        public string date;
+
+        public ScoreEntry(int score, string date)
+        {
+            this.score = score;
+            this.date = date;
+        }
+    }
+
+    [System.Serializable]
+    public class DifficultyScores
+    {
+        public List<ScoreEntry> scores = new List<ScoreEntry>();
+
+        public int GetBestScoreAllTime()
+        {
+            int best = 0;
+            foreach (ScoreEntry entry in scores)
+            {
+                if (entry.score > best)
+                {
+                    best = entry.score;
+                }
+            }
+            return best;
+        }
+
+        public int GetBestScoreToday()
+        {
+            string today = DateTime.Now.ToString("yyyy-MM-dd");
+            int best = 0;
+            foreach (ScoreEntry entry in scores)
+            {
+                if (entry.date == today && entry.score > best)
+                {
+                    best = entry.score;
+                }
+            }
+            return best;
+        }
+
+        public int GetBestScoreThisWeek()
+        {
+            DateTime now = DateTime.Now;
+            DateTime weekStart = now.AddDays(-(int)now.DayOfWeek);
+            string weekStartStr = weekStart.ToString("yyyy-MM-dd");
+
+            int best = 0;
+            foreach (ScoreEntry entry in scores)
+            {
+                DateTime entryDate;
+                if (DateTime.TryParse(entry.date, out entryDate))
+                {
+                    if (entryDate >= weekStart && entry.score > best)
+                    {
+                        best = entry.score;
+                    }
+                }
+            }
+            return best;
+        }
+
+        public void AddScore(int score)
+        {
+            string today = DateTime.Now.ToString("yyyy-MM-dd");
+            scores.Add(new ScoreEntry(score, today));
+        }
+    }
+
+    [System.Serializable]
     public class HighScoreData
     {
-        public int easyHighScore = 0;
-        public int mediumHighScore = 0;
-        public int hardHighScore = 0;
+        public DifficultyScores easyScores = new DifficultyScores();
+        public DifficultyScores mediumScores = new DifficultyScores();
+        public DifficultyScores hardScores = new DifficultyScores();
     }
 
     [Header("Button References")]
@@ -58,7 +132,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject panelGameOver;
     [SerializeField] private GameObject panelScore;
     [SerializeField] private TextMeshProUGUI panelScoreCurrentScoreText;
-    [SerializeField] private TextMeshProUGUI panelScoreBestScoreText;
+    [SerializeField] private TextMeshProUGUI panelScoreBestTodayText;
+    [SerializeField] private TextMeshProUGUI panelScoreBestWeekText;
+    [SerializeField] private TextMeshProUGUI panelScoreBestAllTimeText;
     [SerializeField] private TextMeshProUGUI panelScoreDifficultyText;
 
     [Header("Audio")]
@@ -152,19 +228,19 @@ public class GameManager : MonoBehaviour
                 break;
 
             case Difficulty.Medium:
-                ButtonColor mediumButton = (ButtonColor)Random.Range(0, 4);
+                ButtonColor mediumButton = (ButtonColor)UnityEngine.Random.Range(0, 4);
                 newStep = new SequenceStep(mediumButton);
                 break;
 
             case Difficulty.Hard:
-                if (Random.value < 0.3f)
+                if (UnityEngine.Random.value < 0.3f)
                 {
                     List<ButtonColor> doubleButtons = new List<ButtonColor>();
-                    ButtonColor first = (ButtonColor)Random.Range(0, 4);
+                    ButtonColor first = (ButtonColor)UnityEngine.Random.Range(0, 4);
                     ButtonColor second;
                     do
                     {
-                        second = (ButtonColor)Random.Range(0, 4);
+                        second = (ButtonColor)UnityEngine.Random.Range(0, 4);
                     } while (second == first);
 
                     doubleButtons.Add(first);
@@ -173,13 +249,13 @@ public class GameManager : MonoBehaviour
                 }
                 else
                 {
-                    ButtonColor hardButton = (ButtonColor)Random.Range(0, 4);
+                    ButtonColor hardButton = (ButtonColor)UnityEngine.Random.Range(0, 4);
                     newStep = new SequenceStep(hardButton);
                 }
                 break;
 
             default:
-                ButtonColor defaultButton = (ButtonColor)Random.Range(0, 4);
+                ButtonColor defaultButton = (ButtonColor)UnityEngine.Random.Range(0, 4);
                 newStep = new SequenceStep(defaultButton);
                 break;
         }
@@ -189,7 +265,7 @@ public class GameManager : MonoBehaviour
 
     private ButtonColor GetRandomButtonForEasy()
     {
-        int randomIndex = Random.Range(0, 3);
+        int randomIndex = UnityEngine.Random.Range(0, 3);
         switch (randomIndex)
         {
             case 0: return ButtonColor.Blue;
@@ -501,7 +577,7 @@ public class GameManager : MonoBehaviour
     {
         if (highScoreTextUI != null)
         {
-            int savedHighScore = GetHighScoreForCurrentDifficulty();
+            int savedHighScore = GetBestScoreAllTime();
             int displayScore = Mathf.Max(savedHighScore, playerScore);
             highScoreTextUI.text = displayScore.ToString();
         }
@@ -509,39 +585,13 @@ public class GameManager : MonoBehaviour
 
     private void SaveHighScore()
     {
-        bool newHighScore = false;
+        DifficultyScores difficultyScores = GetDifficultyScores();
 
-        switch (difficulty)
+        if (difficultyScores != null)
         {
-            case Difficulty.Easy:
-                if (playerScore > highScoreData.easyHighScore)
-                {
-                    highScoreData.easyHighScore = playerScore;
-                    newHighScore = true;
-                }
-                break;
-
-            case Difficulty.Medium:
-                if (playerScore > highScoreData.mediumHighScore)
-                {
-                    highScoreData.mediumHighScore = playerScore;
-                    newHighScore = true;
-                }
-                break;
-
-            case Difficulty.Hard:
-                if (playerScore > highScoreData.hardHighScore)
-                {
-                    highScoreData.hardHighScore = playerScore;
-                    newHighScore = true;
-                }
-                break;
-        }
-
-        if (newHighScore)
-        {
+            difficultyScores.AddScore(playerScore);
             SaveHighScoresToDisk();
-            Debug.Log($"New High Score for {difficulty}! Score: {playerScore}");
+            Debug.Log($"Score saved for {difficulty}: {playerScore}");
         }
     }
 
@@ -568,7 +618,6 @@ public class GameManager : MonoBehaviour
                 string json = File.ReadAllText(saveFilePath);
                 highScoreData = JsonUtility.FromJson<HighScoreData>(json);
                 Debug.Log($"High scores loaded from: {saveFilePath}");
-                Debug.Log($"Easy: {highScoreData.easyHighScore}, Medium: {highScoreData.mediumHighScore}, Hard: {highScoreData.hardHighScore}");
             }
             else
             {
@@ -583,19 +632,37 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public int GetHighScoreForCurrentDifficulty()
+    private DifficultyScores GetDifficultyScores()
     {
         switch (difficulty)
         {
             case Difficulty.Easy:
-                return highScoreData.easyHighScore;
+                return highScoreData.easyScores;
             case Difficulty.Medium:
-                return highScoreData.mediumHighScore;
+                return highScoreData.mediumScores;
             case Difficulty.Hard:
-                return highScoreData.hardHighScore;
+                return highScoreData.hardScores;
             default:
-                return 0;
+                return null;
         }
+    }
+
+    public int GetBestScoreAllTime()
+    {
+        DifficultyScores difficultyScores = GetDifficultyScores();
+        return difficultyScores != null ? difficultyScores.GetBestScoreAllTime() : 0;
+    }
+
+    public int GetBestScoreToday()
+    {
+        DifficultyScores difficultyScores = GetDifficultyScores();
+        return difficultyScores != null ? difficultyScores.GetBestScoreToday() : 0;
+    }
+
+    public int GetBestScoreThisWeek()
+    {
+        DifficultyScores difficultyScores = GetDifficultyScores();
+        return difficultyScores != null ? difficultyScores.GetBestScoreThisWeek() : 0;
     }
 
     public HighScoreData GetAllHighScores()
@@ -610,10 +677,22 @@ public class GameManager : MonoBehaviour
             panelScoreCurrentScoreText.text = playerScore.ToString();
         }
 
-        if (panelScoreBestScoreText != null)
+        if (panelScoreBestTodayText != null)
         {
-            int bestScore = GetHighScoreForCurrentDifficulty();
-            panelScoreBestScoreText.text = bestScore.ToString();
+            int bestToday = Mathf.Max(GetBestScoreToday(), playerScore);
+            panelScoreBestTodayText.text = bestToday.ToString();
+        }
+
+        if (panelScoreBestWeekText != null)
+        {
+            int bestWeek = Mathf.Max(GetBestScoreThisWeek(), playerScore);
+            panelScoreBestWeekText.text = bestWeek.ToString();
+        }
+
+        if (panelScoreBestAllTimeText != null)
+        {
+            int bestAllTime = Mathf.Max(GetBestScoreAllTime(), playerScore);
+            panelScoreBestAllTimeText.text = bestAllTime.ToString();
         }
 
         if (panelScoreDifficultyText != null)
