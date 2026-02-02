@@ -4250,6 +4250,7 @@ MonoBehaviour:
   - {fileID: 225895522}
   scoreText2D: {fileID: 617278834}
   scoreTextUI: {fileID: 930903001}
+  highScoreTextUI: {fileID: 1646053221}
   panelGameOver: {fileID: 706976540}
   audioSource: {fileID: 894645331}
   gameOverSound: {fileID: 8300000, guid: 6cdb0445bb50e4a88a24d5d1fa6c2024, type: 3}

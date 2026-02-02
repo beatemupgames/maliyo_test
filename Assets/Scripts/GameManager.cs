@@ -53,6 +53,7 @@ public class GameManager : MonoBehaviour
     [Header("UI References")]
     [SerializeField] private TextMeshPro scoreText2D;
     [SerializeField] private TextMeshProUGUI scoreTextUI;
+    [SerializeField] private TextMeshProUGUI highScoreTextUI;
     [SerializeField] private GameObject panelGameOver;
 
     [Header("Audio")]
@@ -85,6 +86,7 @@ public class GameManager : MonoBehaviour
     {
         saveFilePath = Path.Combine(Application.persistentDataPath, "highscores.json");
         LoadHighScores();
+        UpdateHighScoreUI();
 
         if (panelGameOver != null)
         {
@@ -418,6 +420,18 @@ public class GameManager : MonoBehaviour
         if (scoreTextUI != null)
         {
             scoreTextUI.text = scoreString;
+        }
+
+        UpdateHighScoreUI();
+    }
+
+    private void UpdateHighScoreUI()
+    {
+        if (highScoreTextUI != null)
+        {
+            int savedHighScore = GetHighScoreForCurrentDifficulty();
+            int displayScore = Mathf.Max(savedHighScore, playerScore);
+            highScoreTextUI.text = displayScore.ToString();
         }
     }
 
