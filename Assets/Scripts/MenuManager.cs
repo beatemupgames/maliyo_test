@@ -19,6 +19,7 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private Slider difficultySlider;
     [SerializeField] private TextMeshProUGUI difficultyText;
     [SerializeField] private Image difficultyIcon;
+    [SerializeField] private Image handleInsideImage; // Reference to HandleInside
     [SerializeField] private Sprite easyDifficultySprite;
     [SerializeField] private Sprite mediumDifficultySprite;
     [SerializeField] private Sprite hardDifficultySprite;
@@ -78,10 +79,29 @@ public class MenuManager : MonoBehaviour
             pointerUpEntry.eventID = UnityEngine.EventSystems.EventTriggerType.PointerUp;
             pointerUpEntry.callback.AddListener((data) => { OnSliderPointerUp(); });
             trigger.triggers.Add(pointerUpEntry);
+
+            // Auto-find HandleInside if not assigned
+            if (handleInsideImage == null)
+            {
+                Transform handleSlideArea = difficultySlider.transform.Find("Handle Slide Area");
+                if (handleSlideArea != null)
+                {
+                    Transform handle = handleSlideArea.Find("Handle");
+                    if (handle != null)
+                    {
+                        Transform handleInside = handle.Find("HandleInside");
+                        if (handleInside != null)
+                        {
+                            handleInsideImage = handleInside.GetComponent<Image>();
+                        }
+                    }
+                }
+            }
         }
 
         // Update UI to reflect current difficulty
         UpdateDifficultyUI();
+        UpdateHandleColor();
     }
 
     private void Update()
@@ -90,6 +110,9 @@ public class MenuManager : MonoBehaviour
         if (difficultySlider != null && isSnapping && !isDraggingSlider)
         {
             difficultySlider.value = Mathf.Lerp(difficultySlider.value, targetSliderValue, Time.deltaTime * sliderSnapSpeed);
+
+            // Update handle color during snapping animation
+            UpdateHandleColor();
 
             // Stop snapping when close enough
             if (Mathf.Abs(difficultySlider.value - targetSliderValue) < 0.01f)
@@ -129,6 +152,9 @@ public class MenuManager : MonoBehaviour
 
     private void OnDifficultySliderChanged(float value)
     {
+        // Update handle color in real-time
+        UpdateHandleColor();
+
         // Update UI in real-time while dragging
         if (isDraggingSlider)
         {
@@ -177,6 +203,31 @@ public class MenuManager : MonoBehaviour
         {
             difficultyIcon.sprite = difficultySprite;
         }
+    }
+
+    private void UpdateHandleColor()
+    {
+        if (handleInsideImage == null || difficultySlider == null)
+            return;
+
+        float sliderValue = difficultySlider.value;
+        Color targetColor;
+
+        // Interpolate color based on slider position
+        if (sliderValue <= 1f)
+        {
+            // Between Easy (0) and Medium (1) - interpolate between green and orange
+            float t = sliderValue; // 0 to 1
+            targetColor = Color.Lerp(easyDifficultyColor, mediumDifficultyColor, t);
+        }
+        else
+        {
+            // Between Medium (1) and Hard (2) - interpolate between orange and red
+            float t = sliderValue - 1f; // 0 to 1
+            targetColor = Color.Lerp(mediumDifficultyColor, hardDifficultyColor, t);
+        }
+
+        handleInsideImage.color = targetColor;
     }
 
     public void OnPlayButton()
