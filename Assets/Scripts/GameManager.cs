@@ -55,6 +55,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI scoreTextUI;
     [SerializeField] private TextMeshProUGUI highScoreTextUI;
     [SerializeField] private GameObject panelGameOver;
+    [SerializeField] private GameObject panelScore;
 
     [Header("Audio")]
     [SerializeField] private AudioSource audioSource;
@@ -65,6 +66,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float timeBetweenButtons = 0.6f;
     [SerializeField] private float buttonPressDuration = 0.4f;
     [SerializeField] private float gameOverFadeDuration = 0.3f;
+    [SerializeField] private float gameOverFadeOutDuration = 0.15f;
+    [SerializeField] private float scoreWaitDuration = 1.0f;
+    [SerializeField] private float scoreFadeInDuration = 0.3f;
     [SerializeField] private float simultaneousButtonDelay = 0.05f;
 
     [Header("Game State")]
@@ -93,6 +97,11 @@ public class GameManager : MonoBehaviour
             panelGameOver.SetActive(false);
         }
 
+        if (panelScore != null)
+        {
+            panelScore.SetActive(false);
+        }
+
         StartNewGame();
     }
 
@@ -107,6 +116,11 @@ public class GameManager : MonoBehaviour
         if (panelGameOver != null)
         {
             panelGameOver.SetActive(false);
+        }
+
+        if (panelScore != null)
+        {
+            panelScore.SetActive(false);
         }
 
         UpdateScoreUI();
@@ -339,24 +353,7 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator FadeInPanelCoroutine()
     {
-        CanvasGroup canvasGroup = panelGameOver.GetComponent<CanvasGroup>();
-
-        if (canvasGroup == null)
-        {
-            canvasGroup = panelGameOver.AddComponent<CanvasGroup>();
-        }
-
-        float elapsedTime = 0f;
-        canvasGroup.alpha = 0f;
-
-        while (elapsedTime < gameOverFadeDuration)
-        {
-            elapsedTime += Time.deltaTime;
-            canvasGroup.alpha = Mathf.Lerp(0f, 1f, elapsedTime / gameOverFadeDuration);
-            yield return null;
-        }
-
-        canvasGroup.alpha = 1f;
+        yield return StartCoroutine(FadeInPanelCoroutine(panelGameOver, gameOverFadeDuration));
     }
 
     private void ActivateButton(ButtonColor buttonColor)
@@ -406,6 +403,75 @@ public class GameManager : MonoBehaviour
         {
             StartNewGame();
         }
+    }
+
+    public void OnNoThanksButton()
+    {
+        if (currentState == GameState.GameOver)
+        {
+            StartCoroutine(NoThanksSequenceCoroutine());
+        }
+    }
+
+    private IEnumerator NoThanksSequenceCoroutine()
+    {
+        if (panelGameOver != null)
+        {
+            yield return StartCoroutine(FadeOutPanelCoroutine(panelGameOver, gameOverFadeOutDuration));
+            panelGameOver.SetActive(false);
+        }
+
+        yield return new WaitForSeconds(scoreWaitDuration);
+
+        if (panelScore != null)
+        {
+            panelScore.SetActive(true);
+            yield return StartCoroutine(FadeInPanelCoroutine(panelScore, scoreFadeInDuration));
+        }
+    }
+
+    private IEnumerator FadeOutPanelCoroutine(GameObject panel, float duration)
+    {
+        CanvasGroup canvasGroup = panel.GetComponent<CanvasGroup>();
+
+        if (canvasGroup == null)
+        {
+            canvasGroup = panel.AddComponent<CanvasGroup>();
+        }
+
+        float elapsedTime = 0f;
+        canvasGroup.alpha = 1f;
+
+        while (elapsedTime < duration)
+        {
+            elapsedTime += Time.deltaTime;
+            canvasGroup.alpha = Mathf.Lerp(1f, 0f, elapsedTime / duration);
+            yield return null;
+        }
+
+        canvasGroup.alpha = 0f;
+    }
+
+    private IEnumerator FadeInPanelCoroutine(GameObject panel, float duration)
+    {
+        CanvasGroup canvasGroup = panel.GetComponent<CanvasGroup>();
+
+        if (canvasGroup == null)
+        {
+            canvasGroup = panel.AddComponent<CanvasGroup>();
+        }
+
+        float elapsedTime = 0f;
+        canvasGroup.alpha = 0f;
+
+        while (elapsedTime < duration)
+        {
+            elapsedTime += Time.deltaTime;
+            canvasGroup.alpha = Mathf.Lerp(0f, 1f, elapsedTime / duration);
+            yield return null;
+        }
+
+        canvasGroup.alpha = 1f;
     }
 
     private void UpdateScoreUI()
