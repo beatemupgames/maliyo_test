@@ -180,6 +180,16 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        // Load difficulty from PlayerPrefs if set
+        if (PlayerPrefs.HasKey("GameDifficulty"))
+        {
+            string difficultyString = PlayerPrefs.GetString("GameDifficulty");
+            if (System.Enum.TryParse(difficultyString, true, out Difficulty loadedDifficulty))
+            {
+                difficulty = loadedDifficulty;
+            }
+        }
+
         saveFilePath = Path.Combine(Application.persistentDataPath, "highscores.json");
         LoadHighScores();
         UpdateHighScoreUI();
