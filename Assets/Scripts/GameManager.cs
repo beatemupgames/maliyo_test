@@ -14,6 +14,9 @@ public class GameManager : MonoBehaviour
         GameOver
     }
 
+    [Header("Button References")]
+    [SerializeField] private SimonButton[] buttons = new SimonButton[4];
+
     [Header("Game Settings")]
     [SerializeField] private float timeBetweenButtons = 0.6f;
     [SerializeField] private float buttonPressDuration = 0.4f;
@@ -62,6 +65,7 @@ public class GameManager : MonoBehaviour
     private IEnumerator ShowSequenceCoroutine()
     {
         currentState = GameState.ShowingSequence;
+        SetButtonsInteractable(false);
 
         yield return new WaitForSeconds(0.5f);
 
@@ -74,6 +78,7 @@ public class GameManager : MonoBehaviour
         }
 
         currentState = GameState.WaitingForPlayerInput;
+        SetButtonsInteractable(true);
     }
 
     public void OnPlayerPressButton(ButtonColor buttonPressed)
@@ -122,19 +127,49 @@ public class GameManager : MonoBehaviour
     private void OnPlayerFail()
     {
         currentState = GameState.GameOver;
+        SetButtonsInteractable(false);
         Debug.Log($"Game Over! Final Score: {playerScore}, Rounds Completed: {currentRound - 1}");
     }
 
-    private void ActivateButton(ButtonColor button)
+    private void ActivateButton(ButtonColor buttonColor)
     {
-        Debug.Log($"Activating button: {button}");
-        // TODO: Trigger visual and audio feedback for the button
+        SimonButton button = GetButtonByColor(buttonColor);
+        if (button != null)
+        {
+            button.Activate();
+        }
     }
 
-    private void DeactivateButton(ButtonColor button)
+    private void DeactivateButton(ButtonColor buttonColor)
     {
-        Debug.Log($"Deactivating button: {button}");
-        // TODO: Stop visual and audio feedback for the button
+        SimonButton button = GetButtonByColor(buttonColor);
+        if (button != null)
+        {
+            button.Deactivate();
+        }
+    }
+
+    private SimonButton GetButtonByColor(ButtonColor color)
+    {
+        foreach (SimonButton button in buttons)
+        {
+            if (button != null && button.ButtonColor == color)
+            {
+                return button;
+            }
+        }
+        return null;
+    }
+
+    private void SetButtonsInteractable(bool interactable)
+    {
+        foreach (SimonButton button in buttons)
+        {
+            if (button != null)
+            {
+                button.SetInteractable(interactable);
+            }
+        }
     }
 
     public void RestartGame()
