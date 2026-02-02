@@ -127,6 +127,7 @@ public class GameManager : MonoBehaviour
 
     [Header("UI References")]
     [SerializeField] private TextMeshPro scoreText2D;
+    [SerializeField] private TextMeshPro scoreNumberText2D;
     [SerializeField] private TextMeshProUGUI scoreTextUI;
     [SerializeField] private TextMeshProUGUI highScoreTextUI;
     [SerializeField] private TextMeshProUGUI textMode;
@@ -185,6 +186,7 @@ public class GameManager : MonoBehaviour
     private string saveFilePath;
     private Color scoreText2DOriginalColor;
     private Vector3 scoreText2DOriginalScale;
+    private Color scoreNumberText2DOriginalColor;
     private Coroutine triangle1RotationCoroutine;
     private Coroutine triangle2RotationCoroutine;
 
@@ -208,6 +210,11 @@ public class GameManager : MonoBehaviour
         {
             scoreText2DOriginalColor = scoreText2D.color;
             scoreText2DOriginalScale = scoreText2D.transform.localScale;
+        }
+
+        if (scoreNumberText2D != null)
+        {
+            scoreNumberText2DOriginalColor = scoreNumberText2D.color;
         }
 
         saveFilePath = Path.Combine(Application.persistentDataPath, "highscores.json");
@@ -303,7 +310,7 @@ public class GameManager : MonoBehaviour
         }
 
         RestoreGameElementsAlpha();
-        UpdateScoreUI();
+        UpdateScoreUI(false);
         StartNextRound();
     }
 
@@ -500,6 +507,9 @@ public class GameManager : MonoBehaviour
         {
             audioSource.PlayOneShot(gameOverSound);
         }
+
+        // Start score text red animation
+        StartCoroutine(ScoreTextRedFlashCoroutine());
 
         for (int i = 0; i < 2; i++)
         {
@@ -964,14 +974,17 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void UpdateScoreUI()
+    private void UpdateScoreUI(bool animate = true)
     {
         string scoreString = playerScore.ToString();
 
         if (scoreText2D != null)
         {
             scoreText2D.text = scoreString;
-            StartCoroutine(AnimateScoreTextCoroutine());
+            if (animate && playerScore > 0)
+            {
+                StartCoroutine(AnimateScoreTextCoroutine());
+            }
         }
 
         if (scoreTextUI != null)
@@ -1021,6 +1034,77 @@ public class GameManager : MonoBehaviour
 
         textTransform.localScale = scoreText2DOriginalScale;
         scoreText2D.color = scoreText2DOriginalColor;
+    }
+
+    private IEnumerator ScoreTextRedFlashCoroutine()
+    {
+        float transitionDuration = 0.2f;
+        float holdDuration = 0.6f;
+        float elapsedTime = 0f;
+
+        // Fade to red
+        while (elapsedTime < transitionDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            float t = elapsedTime / transitionDuration;
+
+            if (scoreText2D != null)
+            {
+                scoreText2D.color = Color.Lerp(scoreText2DOriginalColor, Color.red, t);
+            }
+
+            if (scoreNumberText2D != null)
+            {
+                scoreNumberText2D.color = Color.Lerp(scoreNumberText2DOriginalColor, Color.red, t);
+            }
+
+            yield return null;
+        }
+
+        // Ensure full red
+        if (scoreText2D != null)
+        {
+            scoreText2D.color = Color.red;
+        }
+
+        if (scoreNumberText2D != null)
+        {
+            scoreNumberText2D.color = Color.red;
+        }
+
+        // Hold red color
+        yield return new WaitForSeconds(holdDuration);
+
+        // Fade back to original colors
+        elapsedTime = 0f;
+        while (elapsedTime < transitionDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            float t = elapsedTime / transitionDuration;
+
+            if (scoreText2D != null)
+            {
+                scoreText2D.color = Color.Lerp(Color.red, scoreText2DOriginalColor, t);
+            }
+
+            if (scoreNumberText2D != null)
+            {
+                scoreNumberText2D.color = Color.Lerp(Color.red, scoreNumberText2DOriginalColor, t);
+            }
+
+            yield return null;
+        }
+
+        // Ensure original colors are restored
+        if (scoreText2D != null)
+        {
+            scoreText2D.color = scoreText2DOriginalColor;
+        }
+
+        if (scoreNumberText2D != null)
+        {
+            scoreNumberText2D.color = scoreNumberText2DOriginalColor;
+        }
     }
 
     private void UpdateHighScoreUI()
