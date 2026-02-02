@@ -182,9 +182,10 @@ public class MenuManager : MonoBehaviour
 
     private void OnDifficultySliderChanged(float value)
     {
-        // Update handle color and text rotation in real-time
+        // Update handle color, text rotation, and icon in real-time
         UpdateHandleColor();
         UpdateTextRotation();
+        UpdateDifficultyUI();
 
         // Play sound when crossing difficulty thresholds
         if (isDraggingSlider)
@@ -242,10 +243,9 @@ public class MenuManager : MonoBehaviour
         Color upperColor = GetDifficultyColor(upperDifficulty);
 
         // Calculate rotation progress (0 = fully showing lower, 1 = fully showing upper)
-        // Use sine wave for more natural rotation feel
         float rotationProgress = t;
 
-        // Update main text (current difficulty fading out)
+        // Update main text (current difficulty rotating away upward)
         if (difficultyText != null)
         {
             difficultyText.text = lowerName;
@@ -264,7 +264,7 @@ public class MenuManager : MonoBehaviour
             difficultyText.color = color;
         }
 
-        // Update next text (next difficulty fading in from below)
+        // Update next text (next difficulty rotating in from below)
         if (difficultyTextNext != null && difficultyTextNextRect != null)
         {
             difficultyTextNext.text = upperName;
