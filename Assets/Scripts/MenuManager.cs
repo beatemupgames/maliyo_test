@@ -18,6 +18,7 @@ public class MenuManager : MonoBehaviour
     [Header("Difficulty Settings")]
     [SerializeField] private Slider difficultySlider;
     [SerializeField] private TextMeshProUGUI difficultyText;
+    [SerializeField] private TextMeshProUGUI difficultyTextNext; // Second text for smooth transition
     [SerializeField] private Image difficultyIcon;
     [SerializeField] private Image handleInsideImage; // Reference to HandleInside
     [SerializeField] private Button playButton; // Reference to Play button
@@ -34,11 +35,16 @@ public class MenuManager : MonoBehaviour
 
     [Header("Slider Animation")]
     [SerializeField] private float sliderSnapSpeed = 10f;
+    [SerializeField] private float textRotationAmount = 30f; // Distance for full rotation between difficulties
 
     private Difficulty currentDifficulty = Difficulty.Easy;
     private bool isDraggingSlider = false;
     private float targetSliderValue;
     private bool isSnapping = false;
+    private RectTransform difficultyTextRect;
+    private RectTransform difficultyTextNextRect;
+    private Vector2 textOriginalPosition;
+    private Vector3 textOriginalScale;
 
     private void Start()
     {
@@ -100,9 +106,31 @@ public class MenuManager : MonoBehaviour
             }
         }
 
+        // Get RectTransform of difficulty texts
+        if (difficultyText != null)
+        {
+            difficultyTextRect = difficultyText.GetComponent<RectTransform>();
+            if (difficultyTextRect != null)
+            {
+                textOriginalPosition = difficultyTextRect.anchoredPosition;
+                textOriginalScale = difficultyTextRect.localScale;
+            }
+        }
+
+        if (difficultyTextNext != null)
+        {
+            difficultyTextNextRect = difficultyTextNext.GetComponent<RectTransform>();
+            if (difficultyTextNextRect != null)
+            {
+                difficultyTextNextRect.anchoredPosition = textOriginalPosition;
+                difficultyTextNextRect.localScale = textOriginalScale;
+            }
+        }
+
         // Update UI to reflect current difficulty
         UpdateDifficultyUI();
         UpdateHandleColor();
+        UpdateTextRotation();
     }
 
     private void Update()
@@ -112,8 +140,9 @@ public class MenuManager : MonoBehaviour
         {
             difficultySlider.value = Mathf.Lerp(difficultySlider.value, targetSliderValue, Time.deltaTime * sliderSnapSpeed);
 
-            // Update handle color during snapping animation
+            // Update handle color and text rotation during snapping animation
             UpdateHandleColor();
+            UpdateTextRotation();
 
             // Stop snapping when close enough
             if (Mathf.Abs(difficultySlider.value - targetSliderValue) < 0.01f)
@@ -153,17 +182,17 @@ public class MenuManager : MonoBehaviour
 
     private void OnDifficultySliderChanged(float value)
     {
-        // Update handle color in real-time
+        // Update handle color and text rotation in real-time
         UpdateHandleColor();
+        UpdateTextRotation();
 
-        // Update UI in real-time while dragging
+        // Play sound when crossing difficulty thresholds
         if (isDraggingSlider)
         {
             Difficulty previewDifficulty = (Difficulty)Mathf.RoundToInt(value);
             if (previewDifficulty != currentDifficulty)
             {
                 currentDifficulty = previewDifficulty;
-                UpdateDifficultyUI();
                 PlayClickSound();
             }
         }
@@ -171,38 +200,109 @@ public class MenuManager : MonoBehaviour
 
     private void UpdateDifficultyUI()
     {
-        string difficultyName = "";
-        Color difficultyColor = mediumDifficultyColor;
+        // This method is simplified - text content is now managed by UpdateTextRotation
+        Difficulty roundedDifficulty = (Difficulty)Mathf.RoundToInt(difficultySlider != null ? difficultySlider.value : 0);
         Sprite difficultySprite = mediumDifficultySprite;
 
-        switch (currentDifficulty)
+        switch (roundedDifficulty)
         {
             case Difficulty.Easy:
-                difficultyName = "EASY";
-                difficultyColor = easyDifficultyColor;
                 difficultySprite = easyDifficultySprite;
                 break;
             case Difficulty.Medium:
-                difficultyName = "MEDIUM";
-                difficultyColor = mediumDifficultyColor;
                 difficultySprite = mediumDifficultySprite;
                 break;
             case Difficulty.Hard:
-                difficultyName = "HARD";
-                difficultyColor = hardDifficultyColor;
                 difficultySprite = hardDifficultySprite;
                 break;
-        }
-
-        if (difficultyText != null)
-        {
-            difficultyText.text = difficultyName;
-            difficultyText.color = difficultyColor;
         }
 
         if (difficultyIcon != null && difficultySprite != null)
         {
             difficultyIcon.sprite = difficultySprite;
+        }
+    }
+
+    private void UpdateTextRotation()
+    {
+        if (difficultySlider == null || difficultyTextRect == null)
+            return;
+
+        float sliderValue = difficultySlider.value;
+
+        // Determine which two difficulties we're between
+        int lowerDifficulty = Mathf.FloorToInt(sliderValue);
+        int upperDifficulty = Mathf.CeilToInt(sliderValue);
+        float t = sliderValue - lowerDifficulty; // 0 to 1 between two difficulties
+
+        // Get difficulty names and colors
+        string lowerName = GetDifficultyName(lowerDifficulty);
+        string upperName = GetDifficultyName(upperDifficulty);
+        Color lowerColor = GetDifficultyColor(lowerDifficulty);
+        Color upperColor = GetDifficultyColor(upperDifficulty);
+
+        // Calculate rotation progress (0 = fully showing lower, 1 = fully showing upper)
+        // Use sine wave for more natural rotation feel
+        float rotationProgress = t;
+
+        // Update main text (current difficulty fading out)
+        if (difficultyText != null)
+        {
+            difficultyText.text = lowerName;
+
+            // Scale: compress vertically as rotation progresses
+            float scaleY = Mathf.Cos(rotationProgress * Mathf.PI * 0.5f);
+            difficultyTextRect.localScale = new Vector3(textOriginalScale.x, textOriginalScale.y * Mathf.Abs(scaleY), textOriginalScale.z);
+
+            // Position: move up as it rotates
+            float offsetY = rotationProgress * textRotationAmount;
+            difficultyTextRect.anchoredPosition = textOriginalPosition + new Vector2(0, offsetY);
+
+            // Fade out
+            Color color = lowerColor;
+            color.a = 1f - rotationProgress;
+            difficultyText.color = color;
+        }
+
+        // Update next text (next difficulty fading in from below)
+        if (difficultyTextNext != null && difficultyTextNextRect != null)
+        {
+            difficultyTextNext.text = upperName;
+
+            // Scale: expand vertically as it appears
+            float scaleY = Mathf.Sin(rotationProgress * Mathf.PI * 0.5f);
+            difficultyTextNextRect.localScale = new Vector3(textOriginalScale.x, textOriginalScale.y * scaleY, textOriginalScale.z);
+
+            // Position: move from below to center
+            float offsetY = (rotationProgress - 1f) * textRotationAmount;
+            difficultyTextNextRect.anchoredPosition = textOriginalPosition + new Vector2(0, offsetY);
+
+            // Fade in
+            Color color = upperColor;
+            color.a = rotationProgress;
+            difficultyTextNext.color = color;
+        }
+    }
+
+    private string GetDifficultyName(int difficultyIndex)
+    {
+        switch (difficultyIndex)
+        {
+            case 0: return "EASY";
+            case 1: return "MEDIUM";
+            case 2: return "HARD";
+            default: return "EASY";
+        }
+    }
+
+    private Color GetDifficultyColor(int difficultyIndex)
+    {
+        switch (difficultyIndex)
+        {
+            case 0: return easyDifficultyColor;
+            case 1: return mediumDifficultyColor;
+            case 2: return hardDifficultyColor;
+            default: return easyDifficultyColor;
         }
     }
 
