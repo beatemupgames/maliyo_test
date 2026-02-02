@@ -6188,8 +6188,8 @@ MonoBehaviour:
   - {fileID: 904634553}
   - {fileID: 1801686090}
   - {fileID: 225895522}
-  scoreText2D: {fileID: 617278834}
-  scoreNumberText2D: {fileID: 1875484991}
+  scoreNumberText2D: {fileID: 617278834}
+  scoreText2D: {fileID: 1875484991}
   scoreTextUI: {fileID: 930903001}
   highScoreTextUI: {fileID: 1646053221}
   textMode: {fileID: 396274135}

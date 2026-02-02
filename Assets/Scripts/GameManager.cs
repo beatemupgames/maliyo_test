@@ -126,8 +126,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private SimonButton[] buttons = new SimonButton[4];
 
     [Header("UI References")]
-    [SerializeField] private TextMeshPro scoreText2D;
     [SerializeField] private TextMeshPro scoreNumberText2D;
+    [SerializeField] private TextMeshPro scoreText2D;
     [SerializeField] private TextMeshProUGUI scoreTextUI;
     [SerializeField] private TextMeshProUGUI highScoreTextUI;
     [SerializeField] private TextMeshProUGUI textMode;
@@ -184,9 +184,9 @@ public class GameManager : MonoBehaviour
     private HashSet<ButtonColor> currentStepPressedButtons = new HashSet<ButtonColor>();
     private HighScoreData highScoreData = new HighScoreData();
     private string saveFilePath;
-    private Color scoreText2DOriginalColor;
-    private Vector3 scoreText2DOriginalScale;
     private Color scoreNumberText2DOriginalColor;
+    private Vector3 scoreNumberText2DOriginalScale;
+    private Color scoreText2DOriginalColor;
     private Coroutine triangle1RotationCoroutine;
     private Coroutine triangle2RotationCoroutine;
 
@@ -206,15 +206,15 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        if (scoreText2D != null)
-        {
-            scoreText2DOriginalColor = scoreText2D.color;
-            scoreText2DOriginalScale = scoreText2D.transform.localScale;
-        }
-
         if (scoreNumberText2D != null)
         {
             scoreNumberText2DOriginalColor = scoreNumberText2D.color;
+            scoreNumberText2DOriginalScale = scoreNumberText2D.transform.localScale;
+        }
+
+        if (scoreText2D != null)
+        {
+            scoreText2DOriginalColor = scoreText2D.color;
         }
 
         saveFilePath = Path.Combine(Application.persistentDataPath, "highscores.json");
@@ -978,9 +978,9 @@ public class GameManager : MonoBehaviour
     {
         string scoreString = playerScore.ToString();
 
-        if (scoreText2D != null)
+        if (scoreNumberText2D != null)
         {
-            scoreText2D.text = scoreString;
+            scoreNumberText2D.text = scoreString;
             if (animate && playerScore > 0)
             {
                 StartCoroutine(AnimateScoreTextCoroutine());
@@ -997,9 +997,9 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator AnimateScoreTextCoroutine()
     {
-        if (scoreText2D == null) yield break;
+        if (scoreNumberText2D == null) yield break;
 
-        Transform textTransform = scoreText2D.transform;
+        Transform textTransform = scoreNumberText2D.transform;
         float elapsedTime = 0f;
         float halfDuration = scoreAnimationDuration / 2f;
 
@@ -1009,14 +1009,14 @@ public class GameManager : MonoBehaviour
             elapsedTime += Time.deltaTime;
             float t = elapsedTime / halfDuration;
 
-            textTransform.localScale = Vector3.Lerp(scoreText2DOriginalScale, scoreText2DOriginalScale * scoreScaleMultiplier, t);
-            scoreText2D.color = Color.Lerp(scoreText2DOriginalColor, scoreHighlightColor, t);
+            textTransform.localScale = Vector3.Lerp(scoreNumberText2DOriginalScale, scoreNumberText2DOriginalScale * scoreScaleMultiplier, t);
+            scoreNumberText2D.color = Color.Lerp(scoreNumberText2DOriginalColor, scoreHighlightColor, t);
 
             yield return null;
         }
 
-        textTransform.localScale = scoreText2DOriginalScale * scoreScaleMultiplier;
-        scoreText2D.color = scoreHighlightColor;
+        textTransform.localScale = scoreNumberText2DOriginalScale * scoreScaleMultiplier;
+        scoreNumberText2D.color = scoreHighlightColor;
 
         elapsedTime = 0f;
 
@@ -1026,14 +1026,14 @@ public class GameManager : MonoBehaviour
             elapsedTime += Time.deltaTime;
             float t = elapsedTime / halfDuration;
 
-            textTransform.localScale = Vector3.Lerp(scoreText2DOriginalScale * scoreScaleMultiplier, scoreText2DOriginalScale, t);
-            scoreText2D.color = Color.Lerp(scoreHighlightColor, scoreText2DOriginalColor, t);
+            textTransform.localScale = Vector3.Lerp(scoreNumberText2DOriginalScale * scoreScaleMultiplier, scoreNumberText2DOriginalScale, t);
+            scoreNumberText2D.color = Color.Lerp(scoreHighlightColor, scoreNumberText2DOriginalColor, t);
 
             yield return null;
         }
 
-        textTransform.localScale = scoreText2DOriginalScale;
-        scoreText2D.color = scoreText2DOriginalColor;
+        textTransform.localScale = scoreNumberText2DOriginalScale;
+        scoreNumberText2D.color = scoreNumberText2DOriginalColor;
     }
 
     private IEnumerator ScoreTextRedFlashCoroutine()
