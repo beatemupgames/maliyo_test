@@ -129,6 +129,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextMeshPro scoreText2D;
     [SerializeField] private TextMeshProUGUI scoreTextUI;
     [SerializeField] private TextMeshProUGUI highScoreTextUI;
+    [SerializeField] private TextMeshProUGUI textMode;
+    [SerializeField] private TextMeshProUGUI modeText;
+    [SerializeField] private UnityEngine.UI.Image difficultyIcon;
     [SerializeField] private GameObject panelGameOver;
     [SerializeField] private GameObject panelScore;
     [SerializeField] private TextMeshProUGUI panelScoreCurrentScoreText;
@@ -144,6 +147,12 @@ public class GameManager : MonoBehaviour
     [Header("Game Settings")]
     [SerializeField] private Difficulty difficulty = Difficulty.Medium;
     [SerializeField] private string menuSceneName = "Menu";
+    [SerializeField] private Color easyDifficultyColor = new Color(0.184f, 0.718f, 0.255f); // #2FB741
+    [SerializeField] private Color mediumDifficultyColor = new Color(0.992f, 0.655f, 0.016f); // #FDA704
+    [SerializeField] private Color hardDifficultyColor = new Color(0.996f, 0.373f, 0.337f); // #FE5F56
+    [SerializeField] private Sprite easyDifficultySprite;
+    [SerializeField] private Sprite mediumDifficultySprite;
+    [SerializeField] private Sprite hardDifficultySprite;
     [SerializeField] private float timeBetweenButtons = 0.6f;
     [SerializeField] private float buttonPressDuration = 0.4f;
     [SerializeField] private float gameOverFadeDuration = 0.3f;
@@ -172,6 +181,7 @@ public class GameManager : MonoBehaviour
         saveFilePath = Path.Combine(Application.persistentDataPath, "highscores.json");
         LoadHighScores();
         UpdateHighScoreUI();
+        UpdateTextModeUI();
 
         if (panelGameOver != null)
         {
@@ -583,6 +593,47 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void UpdateTextModeUI()
+    {
+        Color difficultyColor = mediumDifficultyColor;
+        Sprite difficultySprite = mediumDifficultySprite;
+        string modeTextString = "MEDIUM MODE";
+
+        switch (difficulty)
+        {
+            case Difficulty.Easy:
+                difficultyColor = easyDifficultyColor;
+                difficultySprite = easyDifficultySprite;
+                modeTextString = "EASY MODE";
+                break;
+            case Difficulty.Medium:
+                difficultyColor = mediumDifficultyColor;
+                difficultySprite = mediumDifficultySprite;
+                modeTextString = "MEDIUM MODE";
+                break;
+            case Difficulty.Hard:
+                difficultyColor = hardDifficultyColor;
+                difficultySprite = hardDifficultySprite;
+                modeTextString = "HARD MODE";
+                break;
+        }
+
+        if (textMode != null)
+        {
+            textMode.color = difficultyColor;
+        }
+
+        if (modeText != null)
+        {
+            modeText.text = modeTextString;
+        }
+
+        if (difficultyIcon != null && difficultySprite != null)
+        {
+            difficultyIcon.sprite = difficultySprite;
+        }
+    }
+
     private void SaveHighScore()
     {
         DifficultyScores difficultyScores = GetDifficultyScores();
@@ -697,7 +748,22 @@ public class GameManager : MonoBehaviour
 
         if (panelScoreDifficultyText != null)
         {
-            panelScoreDifficultyText.text = difficulty.ToString();
+            panelScoreDifficultyText.text = difficulty.ToString().ToUpper();
+
+            Color difficultyColor = mediumDifficultyColor;
+            switch (difficulty)
+            {
+                case Difficulty.Easy:
+                    difficultyColor = easyDifficultyColor;
+                    break;
+                case Difficulty.Medium:
+                    difficultyColor = mediumDifficultyColor;
+                    break;
+                case Difficulty.Hard:
+                    difficultyColor = hardDifficultyColor;
+                    break;
+            }
+            panelScoreDifficultyText.color = difficultyColor;
         }
     }
 

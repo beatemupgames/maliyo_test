@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 82943ff4f0f2e48a284f05ed6b994fd3
+guid: d48d3f7bdda4a4f52b972be6599cadf6
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 6872062630268354695
-    second: BestScores_0
+      213: -1018935224807554100
+    second: EasyDifficultyIcon_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -139,13 +139,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: BestScores_0
+      name: EasyDifficultyIcon_0
       rect:
         serializedVersion: 2
-        x: 0
+        x: 46
         y: 0
-        width: 716
-        height: 490
+        width: 347
+        height: 346
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -154,8 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 780c16f6d887e5f50800000000000000
-      internalID: 6872062630268354695
+      spriteID: cc38634cfc30cd1f0800000000000000
+      internalID: -1018935224807554100
       vertices: []
       indices: 
       edges: []
@@ -174,7 +174,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      BestScores_0: 6872062630268354695
+      EasyDifficultyIcon_0: -1018935224807554100
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
