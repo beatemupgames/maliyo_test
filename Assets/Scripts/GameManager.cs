@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using TMPro;
 using System.IO;
 
@@ -66,6 +67,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Game Settings")]
     [SerializeField] private Difficulty difficulty = Difficulty.Medium;
+    [SerializeField] private string menuSceneName = "Menu";
     [SerializeField] private float timeBetweenButtons = 0.6f;
     [SerializeField] private float buttonPressDuration = 0.4f;
     [SerializeField] private float gameOverFadeDuration = 0.3f;
@@ -618,5 +620,15 @@ public class GameManager : MonoBehaviour
         {
             panelScoreDifficultyText.text = difficulty.ToString();
         }
+    }
+
+    public void OnHomeButton()
+    {
+        SceneManager.LoadScene(menuSceneName);
+    }
+
+    public void OnPlayAgainButton()
+    {
+        StartNewGame();
     }
 }

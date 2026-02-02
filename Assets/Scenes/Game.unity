@@ -3970,7 +3970,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1496929403}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1984510730}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: OnHomeButton
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1496929403
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5650,12 +5662,13 @@ MonoBehaviour:
   highScoreTextUI: {fileID: 1646053221}
   panelGameOver: {fileID: 706976540}
   panelScore: {fileID: 1648219235}
-  panelScoreCurrentScoreText: {fileID: 0}
-  panelScoreBestScoreText: {fileID: 0}
-  panelScoreDifficultyText: {fileID: 0}
+  panelScoreCurrentScoreText: {fileID: 315114323}
+  panelScoreBestScoreText: {fileID: 1291470251}
+  panelScoreDifficultyText: {fileID: 1688587908}
   audioSource: {fileID: 894645331}
   gameOverSound: {fileID: 8300000, guid: 6cdb0445bb50e4a88a24d5d1fa6c2024, type: 3}
   difficulty: 1
+  menuSceneName: Menu
   timeBetweenButtons: 0.6
   buttonPressDuration: 0.4
   gameOverFadeDuration: 0.3
@@ -5764,7 +5777,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2049316135}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1984510730}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: OnPlayAgainButton
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2049316135
 MonoBehaviour:
   m_ObjectHideFlags: 0
