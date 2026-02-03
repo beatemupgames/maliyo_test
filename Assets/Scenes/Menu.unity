@@ -521,6 +521,7 @@ GameObject:
   - component: {fileID: 346942020}
   - component: {fileID: 346942022}
   - component: {fileID: 346942021}
+  - component: {fileID: 346942023}
   m_Layer: 5
   m_Name: DifficultyIcon
   m_TagString: Untagged
@@ -594,6 +595,38 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 346942019}
   m_CullTransparentMesh: 1
+--- !u!114 &346942023
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 346942019}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4db11a343afe744b6853b69c6ca2e6e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  difficultyIcon: {fileID: 1795424966}
+  mouth: {fileID: 317633496}
+  cheekbones: {fileID: 800052665}
+  eyebrows:
+  - {fileID: 797857222}
+  - {fileID: 1178690340}
+  eyes: {fileID: 2031298567}
+  hornLeft: {fileID: 92736213}
+  hornRight: {fileID: 810786393}
+  mouthRotationAngle: 20
+  cheekbonesYOffset: -17
+  eyesEasyOffset: {x: 11, y: 4}
+  eyebrowLeftEasyRotation: 30
+  eyebrowLeftMediumRotation: -5
+  eyebrowLeftHardRotation: -10
+  hornLeftEasyMediumRotation: 30
+  hornLeftHardRotation: 0
+  easyDifficultyColor: {r: 0.184, g: 0.718, b: 0.255, a: 1}
+  mediumDifficultyColor: {r: 0.992, g: 0.655, b: 0.016, a: 1}
+  hardDifficultyColor: {r: 0.996, g: 0.373, b: 0.337, a: 1}
 --- !u!1 &441170751
 GameObject:
   m_ObjectHideFlags: 0
@@ -733,20 +766,10 @@ MonoBehaviour:
   difficultySlider: {fileID: 1705349470}
   difficultyText: {fileID: 1136517778}
   difficultyTextNext: {fileID: 1062683324}
-  difficultyIcon: {fileID: 1795424966}
+  sliderHandle: {fileID: 1222081360}
   handleInsideImage: {fileID: 1584325407}
   playButton: {fileID: 818127507}
-  mouth: {fileID: 317633496}
-  cheekbones: {fileID: 800052665}
-  eyebrows:
-  - {fileID: 797857222}
-  - {fileID: 1178690340}
-  eyes: {fileID: 2031298567}
-  hornLeft: {fileID: 92736213}
-  hornRight: {fileID: 810786393}
-  easyDifficultySprite: {fileID: 21300000, guid: d48d3f7bdda4a4f52b972be6599cadf6, type: 3}
-  mediumDifficultySprite: {fileID: 21300000, guid: f94128d51845f4dd7af94f338bc64486, type: 3}
-  hardDifficultySprite: {fileID: 21300000, guid: 03c1c244afe2448dc81b6859457fa95d, type: 3}
+  iconAnimator: {fileID: 0}
   easyDifficultyColor: {r: 0.184, g: 0.718, b: 0.255, a: 1}
   mediumDifficultyColor: {r: 0.992, g: 0.655, b: 0.016, a: 1}
   hardDifficultyColor: {r: 0.996, g: 0.373, b: 0.337, a: 1}
@@ -754,14 +777,8 @@ MonoBehaviour:
   clickSound: {fileID: 8300000, guid: 3fadf7fd60c314516840178e20d239b9, type: 3}
   sliderSnapSpeed: 10
   textRotationAmount: 120
-  mouthRotationAngle: 20
-  cheekbonesYOffset: -17
-  eyesEasyOffset: {x: 11, y: 4}
-  eyebrowLeftEasyRotation: 30
-  eyebrowLeftMediumRotation: -5
-  eyebrowLeftHardRotation: -10
-  hornLeftEasyMediumRotation: 30
-  hornLeftHardRotation: 0
+  handlePulseScale: 1.1
+  handlePulseDuration: 1.5
 --- !u!4 &548035767
 Transform:
   m_ObjectHideFlags: 0
