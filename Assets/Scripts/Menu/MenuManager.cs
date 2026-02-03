@@ -20,6 +20,7 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI difficultyText;
     [SerializeField] private TextMeshProUGUI difficultyTextNext; // Second text for smooth transition
     [SerializeField] private Image difficultyIcon;
+    [SerializeField] private RectTransform sliderHandle; // Reference to Handle (assign manually)
     [SerializeField] private Image handleInsideImage; // Reference to HandleInside
     [SerializeField] private Button playButton; // Reference to Play button
     [SerializeField] private RectTransform mouth; // Reference to Mouth component
@@ -50,6 +51,8 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private float eyebrowLeftHardRotation = -10f; // Rotation angle for left eyebrow at Hard (right)
     [SerializeField] private float hornLeftEasyMediumRotation = 30f; // Rotation angle for left horn at Easy/Medium
     [SerializeField] private float hornLeftHardRotation = 0f; // Rotation angle for left horn at Hard
+    [SerializeField] private float handlePulseScale = 1.1f; // Scale multiplier for handle pulse animation
+    [SerializeField] private float handlePulseDuration = 1.5f; // Duration of one complete pulse cycle
 
     private Difficulty currentDifficulty = Difficulty.Easy;
     private bool isDraggingSlider = false;
@@ -62,6 +65,11 @@ public class MenuManager : MonoBehaviour
     private RectTransform cheekbonesRect;
     private Vector2 cheekbonesOriginalPosition;
     private Vector2 eyesOriginalPosition;
+    private bool isSliderBeingDragged = false;
+    private float handlePulseTimer = 0f;
+    private Vector3 handleOriginalScale;
+    private RectTransform handleInsideRect;
+    private Vector3 handleInsideOriginalScale;
 
     private void Start()
     {
@@ -104,22 +112,30 @@ public class MenuManager : MonoBehaviour
             pointerUpEntry.callback.AddListener((data) => { OnSliderPointerUp(); });
             trigger.triggers.Add(pointerUpEntry);
 
-            // Auto-find HandleInside if not assigned
-            if (handleInsideImage == null)
+            // Store original scales for pulse animation
+            if (sliderHandle != null)
             {
-                Transform handleSlideArea = difficultySlider.transform.Find("Handle Slide Area");
-                if (handleSlideArea != null)
+                handleOriginalScale = sliderHandle.localScale;
+                Debug.Log($"Handle found! Original scale: {handleOriginalScale}");
+            }
+            else
+            {
+                Debug.LogWarning("Slider Handle not assigned in Inspector!");
+            }
+
+            // Get HandleInside RectTransform
+            if (handleInsideImage != null)
+            {
+                handleInsideRect = handleInsideImage.GetComponent<RectTransform>();
+                if (handleInsideRect != null)
                 {
-                    Transform handle = handleSlideArea.Find("Handle");
-                    if (handle != null)
-                    {
-                        Transform handleInside = handle.Find("HandleInside");
-                        if (handleInside != null)
-                        {
-                            handleInsideImage = handleInside.GetComponent<Image>();
-                        }
-                    }
+                    handleInsideOriginalScale = handleInsideRect.localScale;
+                    Debug.Log($"HandleInside found! Original scale: {handleInsideOriginalScale}");
                 }
+            }
+            else
+            {
+                Debug.LogWarning("HandleInside Image not assigned in Inspector!");
             }
         }
 
@@ -194,17 +210,38 @@ public class MenuManager : MonoBehaviour
                 isSnapping = false;
             }
         }
+
+        // Animate handle pulse when user is not dragging
+        if (!isSliderBeingDragged)
+        {
+            handlePulseTimer += Time.deltaTime;
+            float normalizedTime = (handlePulseTimer % handlePulseDuration) / handlePulseDuration;
+
+            // Create a smooth pulse using sine wave (0 -> 1 -> 0)
+            float pulseValue = Mathf.Sin(normalizedTime * Mathf.PI);
+            float scale = Mathf.Lerp(1f, handlePulseScale, pulseValue);
+
+            // Animate Handle only (HandleInside will inherit the scale as a child)
+            if (sliderHandle != null)
+            {
+                sliderHandle.localScale = handleOriginalScale * scale;
+            }
+        }
     }
 
     private void OnSliderPointerDown()
     {
         isDraggingSlider = true;
         isSnapping = false;
+        isSliderBeingDragged = true;
+
+        // Pause animation - don't reset scale, keep current size
     }
 
     private void OnSliderPointerUp()
     {
         isDraggingSlider = false;
+        isSliderBeingDragged = false;
 
         // Snap to nearest value
         if (difficultySlider != null)
