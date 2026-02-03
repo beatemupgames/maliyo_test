@@ -18,6 +18,7 @@ public class MenuManager : MonoBehaviour
     [Header("Controllers")]
     [SerializeField] private DifficultySliderController sliderController;
     [SerializeField] private DifficultyIconAnimator iconAnimator;
+    [SerializeField] private DifficultyColorProvider colorProvider;
 
     [Header("UI Components")]
     [SerializeField] private Button playButton;
@@ -208,21 +209,10 @@ public class MenuManager : MonoBehaviour
 
     private Color GetDifficultyColor(int difficultyIndex)
     {
-        if (sliderController == null)
+        if (colorProvider == null)
             return Color.white;
 
-        // Get colors from slider controller
-        Color easyColor = new Color(0.184f, 0.718f, 0.255f);
-        Color mediumColor = new Color(0.992f, 0.655f, 0.016f);
-        Color hardColor = new Color(0.996f, 0.373f, 0.337f);
-
-        switch (difficultyIndex)
-        {
-            case 0: return easyColor;
-            case 1: return mediumColor;
-            case 2: return hardColor;
-            default: return easyColor;
-        }
+        return colorProvider.GetColorForDifficulty(difficultyIndex);
     }
 
     private void UpdatePlayButtonColor()

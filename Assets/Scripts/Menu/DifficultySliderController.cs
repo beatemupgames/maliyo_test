@@ -8,15 +8,13 @@ public class DifficultySliderController : MonoBehaviour
     [SerializeField] private RectTransform sliderHandle;
     [SerializeField] private Image handleInsideImage;
 
+    [Header("Dependencies")]
+    [SerializeField] private DifficultyColorProvider colorProvider;
+
     [Header("Animation Settings")]
     [SerializeField] private float sliderSnapSpeed = 10f;
     [SerializeField] private float handlePulseScale = 1.1f;
     [SerializeField] private float handlePulseDuration = 1.5f;
-
-    [Header("Difficulty Colors")]
-    [SerializeField] private Color easyDifficultyColor = new Color(0.184f, 0.718f, 0.255f); // #2FB741
-    [SerializeField] private Color mediumDifficultyColor = new Color(0.992f, 0.655f, 0.016f); // #FDA704
-    [SerializeField] private Color hardDifficultyColor = new Color(0.996f, 0.373f, 0.337f); // #FE5F56
 
     // Events
     public System.Action<float, Color> OnSliderValueChanged;
@@ -152,22 +150,10 @@ public class DifficultySliderController : MonoBehaviour
 
     public Color GetCurrentDifficultyColor()
     {
-        if (difficultySlider == null)
-            return easyDifficultyColor;
+        if (colorProvider == null || difficultySlider == null)
+            return Color.white;
 
-        float sliderValue = difficultySlider.value;
-
-        // Interpolate color based on slider position
-        if (sliderValue <= 1f)
-        {
-            // Between Easy (0) and Medium (1) - interpolate between green and orange
-            return Color.Lerp(easyDifficultyColor, mediumDifficultyColor, sliderValue);
-        }
-        else
-        {
-            // Between Medium (1) and Hard (2) - interpolate between orange and red
-            return Color.Lerp(mediumDifficultyColor, hardDifficultyColor, sliderValue - 1f);
-        }
+        return colorProvider.GetColorForSliderValue(difficultySlider.value);
     }
 
     private void UpdateHandleColor()
