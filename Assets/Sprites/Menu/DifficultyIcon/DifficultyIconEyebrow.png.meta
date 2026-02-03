@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: dc80c13bec8ff4e1699aca2dd925fca6
+guid: d6e221255a1014f14af7c193e55fd87d
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 3306848182110745772
-    second: DifficultyIconEyebrow 1_0
+      213: 7870088270299393120
+    second: DifficultyIconEyebrowv2_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -49,7 +49,7 @@ TextureImporter:
   spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
-  alignment: 6
+  alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
@@ -139,13 +139,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: DifficultyIconEyebrow 1_0
+      name: DifficultyIconEyebrowv2_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
         width: 86
-        height: 48
+        height: 41
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -154,8 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ca47bd4b6e844ed20800000000000000
-      internalID: 3306848182110745772
+      spriteID: 06ce926959b283d60800000000000000
+      internalID: 7870088270299393120
       vertices: []
       indices: 
       edges: []
@@ -174,7 +174,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      DifficultyIconEyebrow 1_0: 3306848182110745772
+      DifficultyIconEyebrowv2_0: 7870088270299393120
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

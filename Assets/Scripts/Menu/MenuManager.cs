@@ -24,7 +24,7 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private Button playButton; // Reference to Play button
     [SerializeField] private RectTransform mouth; // Reference to Mouth component
     [SerializeField] private Image cheekbones; // Reference to cheekbones
-    [SerializeField] private Image[] eyebrows; // Reference to eyebrows
+    [SerializeField] private Image[] eyebrows; // Reference to eyebrows (eyebrows[0] is EyebrowLeft, eyebrows[1] is EyebrowRight)
     [SerializeField] private RectTransform eyes; // Reference to Eyes component
     [SerializeField] private Sprite easyDifficultySprite;
     [SerializeField] private Sprite mediumDifficultySprite;
@@ -43,6 +43,9 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private float mouthRotationAngle = 20f; // Rotation angle for mouth at extremes (Easy/Hard)
     [SerializeField] private float cheekbonesYOffset = -17f; // Y offset for cheekbones at Medium/Hard
     [SerializeField] private Vector2 eyesEasyOffset = new Vector2(11f, 4f); // Position offset for eyes at Easy
+    [SerializeField] private float eyebrowLeftEasyRotation = 20f; // Rotation angle for left eyebrow at Easy (left)
+    [SerializeField] private float eyebrowLeftMediumRotation = -5f; // Rotation angle for left eyebrow at Medium
+    [SerializeField] private float eyebrowLeftHardRotation = -10f; // Rotation angle for left eyebrow at Hard (right)
 
     private Difficulty currentDifficulty = Difficulty.Easy;
     private bool isDraggingSlider = false;
@@ -160,6 +163,7 @@ public class MenuManager : MonoBehaviour
         UpdateMouthRotation();
         UpdateCheekbonesPosition();
         UpdateEyesPosition();
+        UpdateEyebrowsRotation();
     }
 
     private void Update()
@@ -169,12 +173,13 @@ public class MenuManager : MonoBehaviour
         {
             difficultySlider.value = Mathf.Lerp(difficultySlider.value, targetSliderValue, Time.deltaTime * sliderSnapSpeed);
 
-            // Update handle color, text rotation, mouth rotation, cheekbones and eyes position during snapping animation
+            // Update handle color, text rotation, mouth rotation, cheekbones, eyes and eyebrow position during snapping animation
             UpdateHandleColor();
             UpdateTextRotation();
             UpdateMouthRotation();
             UpdateCheekbonesPosition();
             UpdateEyesPosition();
+            UpdateEyebrowsRotation();
 
             // Stop snapping when close enough
             if (Mathf.Abs(difficultySlider.value - targetSliderValue) < 0.01f)
@@ -214,13 +219,14 @@ public class MenuManager : MonoBehaviour
 
     private void OnDifficultySliderChanged(float value)
     {
-        // Update handle color, text rotation, icon, mouth rotation, cheekbones and eyes position in real-time
+        // Update handle color, text rotation, icon, mouth rotation, cheekbones, eyes and eyebrow position in real-time
         UpdateHandleColor();
         UpdateTextRotation();
         UpdateDifficultyUI();
         UpdateMouthRotation();
         UpdateCheekbonesPosition();
         UpdateEyesPosition();
+        UpdateEyebrowsRotation();
 
         // Play sound when crossing difficulty thresholds
         if (isDraggingSlider)
@@ -457,6 +463,52 @@ public class MenuManager : MonoBehaviour
 
         // Apply position
         eyes.anchoredPosition = eyesOriginalPosition + targetOffset;
+    }
+
+    private void UpdateEyebrowsRotation()
+    {
+        if (eyebrows == null || eyebrows.Length < 2 || difficultySlider == null)
+            return;
+
+        float sliderValue = difficultySlider.value;
+
+        // Calculate rotation based on slider position
+        // Easy (0.0) = eyebrowLeftEasyRotation (default +20° left/counter-clockwise)
+        // Medium (1.0) = eyebrowLeftMediumRotation (default -5°)
+        // Hard (2.0) = eyebrowLeftHardRotation (default -10° right/clockwise)
+        float targetRotationLeft;
+
+        if (sliderValue < 1f)
+        {
+            // Between Easy and Medium: interpolate from Easy to Medium rotation
+            targetRotationLeft = Mathf.Lerp(eyebrowLeftEasyRotation, eyebrowLeftMediumRotation, sliderValue);
+        }
+        else
+        {
+            // Between Medium and Hard: interpolate from Medium to Hard rotation
+            targetRotationLeft = Mathf.Lerp(eyebrowLeftMediumRotation, eyebrowLeftHardRotation, sliderValue - 1f);
+        }
+
+        // Apply rotation to EyebrowLeft (first element of eyebrows array)
+        if (eyebrows[0] != null)
+        {
+            RectTransform eyebrowLeftRect = eyebrows[0].GetComponent<RectTransform>();
+            if (eyebrowLeftRect != null)
+            {
+                eyebrowLeftRect.localRotation = Quaternion.Euler(0f, 0f, targetRotationLeft);
+            }
+        }
+
+        // Apply inverse rotation to EyebrowRight (second element of eyebrows array)
+        if (eyebrows[1] != null)
+        {
+            RectTransform eyebrowRightRect = eyebrows[1].GetComponent<RectTransform>();
+            if (eyebrowRightRect != null)
+            {
+                // Rotate in opposite direction
+                eyebrowRightRect.localRotation = Quaternion.Euler(0f, 0f, -targetRotationLeft);
+            }
+        }
     }
 
     public void OnPlayButton()
