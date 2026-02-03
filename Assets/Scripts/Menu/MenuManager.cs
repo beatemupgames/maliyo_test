@@ -25,6 +25,7 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private RectTransform mouth; // Reference to Mouth component
     [SerializeField] private Image cheekbones; // Reference to cheekbones
     [SerializeField] private Image[] eyebrows; // Reference to eyebrows
+    [SerializeField] private RectTransform eyes; // Reference to Eyes component
     [SerializeField] private Sprite easyDifficultySprite;
     [SerializeField] private Sprite mediumDifficultySprite;
     [SerializeField] private Sprite hardDifficultySprite;
@@ -41,6 +42,7 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private float textRotationAmount = 30f; // Distance for full rotation between difficulties
     [SerializeField] private float mouthRotationAngle = 20f; // Rotation angle for mouth at extremes (Easy/Hard)
     [SerializeField] private float cheekbonesYOffset = -17f; // Y offset for cheekbones at Medium/Hard
+    [SerializeField] private Vector2 eyesEasyOffset = new Vector2(11f, 4f); // Position offset for eyes at Easy
 
     private Difficulty currentDifficulty = Difficulty.Easy;
     private bool isDraggingSlider = false;
@@ -52,6 +54,7 @@ public class MenuManager : MonoBehaviour
     private Vector3 textOriginalScale;
     private RectTransform cheekbonesRect;
     private Vector2 cheekbonesOriginalPosition;
+    private Vector2 eyesOriginalPosition;
 
     private void Start()
     {
@@ -144,12 +147,19 @@ public class MenuManager : MonoBehaviour
             }
         }
 
+        // Get original position of eyes
+        if (eyes != null)
+        {
+            eyesOriginalPosition = eyes.anchoredPosition;
+        }
+
         // Update UI to reflect current difficulty
         UpdateDifficultyUI();
         UpdateHandleColor();
         UpdateTextRotation();
         UpdateMouthRotation();
         UpdateCheekbonesPosition();
+        UpdateEyesPosition();
     }
 
     private void Update()
@@ -159,11 +169,12 @@ public class MenuManager : MonoBehaviour
         {
             difficultySlider.value = Mathf.Lerp(difficultySlider.value, targetSliderValue, Time.deltaTime * sliderSnapSpeed);
 
-            // Update handle color, text rotation, mouth rotation, and cheekbones position during snapping animation
+            // Update handle color, text rotation, mouth rotation, cheekbones and eyes position during snapping animation
             UpdateHandleColor();
             UpdateTextRotation();
             UpdateMouthRotation();
             UpdateCheekbonesPosition();
+            UpdateEyesPosition();
 
             // Stop snapping when close enough
             if (Mathf.Abs(difficultySlider.value - targetSliderValue) < 0.01f)
@@ -203,12 +214,13 @@ public class MenuManager : MonoBehaviour
 
     private void OnDifficultySliderChanged(float value)
     {
-        // Update handle color, text rotation, icon, mouth rotation, and cheekbones position in real-time
+        // Update handle color, text rotation, icon, mouth rotation, cheekbones and eyes position in real-time
         UpdateHandleColor();
         UpdateTextRotation();
         UpdateDifficultyUI();
         UpdateMouthRotation();
         UpdateCheekbonesPosition();
+        UpdateEyesPosition();
 
         // Play sound when crossing difficulty thresholds
         if (isDraggingSlider)
@@ -417,6 +429,34 @@ public class MenuManager : MonoBehaviour
 
         // Apply position
         cheekbonesRect.anchoredPosition = new Vector2(cheekbonesOriginalPosition.x, cheekbonesOriginalPosition.y + targetYOffset);
+    }
+
+    private void UpdateEyesPosition()
+    {
+        if (eyes == null || difficultySlider == null)
+            return;
+
+        float sliderValue = difficultySlider.value;
+
+        // Calculate position based on slider position
+        // Easy (0.0) = original position + (11, 4)
+        // Medium (1.0) = original position (0, 0)
+        // Hard (2.0) = original position (0, 0)
+        Vector2 targetOffset;
+
+        if (sliderValue < 1f)
+        {
+            // Between Easy and Medium: interpolate from (11, 4) to (0, 0)
+            targetOffset = Vector2.Lerp(eyesEasyOffset, Vector2.zero, sliderValue);
+        }
+        else
+        {
+            // Between Medium and Hard: stay at (0, 0)
+            targetOffset = Vector2.zero;
+        }
+
+        // Apply position
+        eyes.anchoredPosition = eyesOriginalPosition + targetOffset;
     }
 
     public void OnPlayButton()
