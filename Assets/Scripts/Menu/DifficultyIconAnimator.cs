@@ -27,7 +27,7 @@ public class DifficultyIconAnimator : MonoBehaviour
     private Vector2 cheekbonesOriginalPosition;
     private Vector2 eyesOriginalPosition;
 
-    private void Start()
+    public void Initialize()
     {
         // Store original positions
         if (cheekbones != null)

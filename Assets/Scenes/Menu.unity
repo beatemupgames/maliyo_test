@@ -759,22 +759,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameSceneName: Game
-  difficultySlider: {fileID: 1705349470}
+  sliderController: {fileID: 1705349471}
+  iconAnimator: {fileID: 346942023}
+  playButton: {fileID: 818127507}
   difficultyText: {fileID: 1136517778}
   difficultyTextNext: {fileID: 1062683324}
-  sliderHandle: {fileID: 1222081360}
-  handleInsideImage: {fileID: 1584325407}
-  playButton: {fileID: 818127507}
-  iconAnimator: {fileID: 346942023}
-  easyDifficultyColor: {r: 0.184, g: 0.718, b: 0.255, a: 1}
-  mediumDifficultyColor: {r: 0.992, g: 0.655, b: 0.016, a: 1}
-  hardDifficultyColor: {r: 0.996, g: 0.373, b: 0.337, a: 1}
+  textRotationAmount: 120
   audioSource: {fileID: 604551318}
   clickSound: {fileID: 8300000, guid: 3fadf7fd60c314516840178e20d239b9, type: 3}
-  sliderSnapSpeed: 10
-  textRotationAmount: 120
-  handlePulseScale: 1.1
-  handlePulseDuration: 1.5
 --- !u!4 &548035767
 Transform:
   m_ObjectHideFlags: 0
@@ -2245,6 +2237,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1705349469}
   - component: {fileID: 1705349470}
+  - component: {fileID: 1705349471}
   m_Layer: 5
   m_Name: Slider
   m_TagString: Untagged
@@ -2325,6 +2318,27 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1705349471
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1705349468}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9be37145bee94887ab872cf6c4436c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  difficultySlider: {fileID: 1705349470}
+  sliderHandle: {fileID: 1222081360}
+  handleInsideImage: {fileID: 1584325407}
+  sliderSnapSpeed: 10
+  handlePulseScale: 1.1
+  handlePulseDuration: 1.5
+  easyDifficultyColor: {r: 0.184, g: 0.718, b: 0.255, a: 1}
+  mediumDifficultyColor: {r: 0.992, g: 0.655, b: 0.016, a: 1}
+  hardDifficultyColor: {r: 0.996, g: 0.373, b: 0.337, a: 1}
 --- !u!1 &1795424964
 GameObject:
   m_ObjectHideFlags: 0

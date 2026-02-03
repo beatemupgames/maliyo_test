@@ -15,45 +15,72 @@ public class MenuManager : MonoBehaviour
     [Header("Scene Settings")]
     [SerializeField] private string gameSceneName = "Game";
 
-    [Header("Difficulty Settings")]
-    [SerializeField] private Slider difficultySlider;
+    [Header("Controllers")]
+    [SerializeField] private DifficultySliderController sliderController;
+    [SerializeField] private DifficultyIconAnimator iconAnimator;
+
+    [Header("UI Components")]
+    [SerializeField] private Button playButton;
     [SerializeField] private TextMeshProUGUI difficultyText;
-    [SerializeField] private TextMeshProUGUI difficultyTextNext; // Second text for smooth transition
-    [SerializeField] private RectTransform sliderHandle; // Reference to Handle (assign manually)
-    [SerializeField] private Image handleInsideImage; // Reference to HandleInside
-    [SerializeField] private Button playButton; // Reference to Play button
-    [SerializeField] private DifficultyIconAnimator iconAnimator; // Reference to DifficultyIconAnimator
-    [SerializeField] private Color easyDifficultyColor = new Color(0.184f, 0.718f, 0.255f); // #2FB741
-    [SerializeField] private Color mediumDifficultyColor = new Color(0.992f, 0.655f, 0.016f); // #FDA704
-    [SerializeField] private Color hardDifficultyColor = new Color(0.996f, 0.373f, 0.337f); // #FE5F56
+    [SerializeField] private TextMeshProUGUI difficultyTextNext;
+
+    [Header("Text Animation Settings")]
+    [SerializeField] private float textRotationAmount = 30f;
 
     [Header("Audio")]
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip clickSound;
 
-    [Header("Slider Animation")]
-    [SerializeField] private float sliderSnapSpeed = 10f;
-    [SerializeField] private float textRotationAmount = 30f; // Distance for full rotation between difficulties
-    [SerializeField] private float handlePulseScale = 1.1f; // Scale multiplier for handle pulse animation
-    [SerializeField] private float handlePulseDuration = 1.5f; // Duration of one complete pulse cycle
-
     private Difficulty currentDifficulty = Difficulty.Easy;
-    private bool isDraggingSlider = false;
-    private float targetSliderValue;
-    private bool isSnapping = false;
     private RectTransform difficultyTextRect;
     private RectTransform difficultyTextNextRect;
     private Vector2 textOriginalPosition;
     private Vector3 textOriginalScale;
-    private bool isSliderBeingDragged = false;
-    private float handlePulseTimer = 0f;
-    private Vector3 handleOriginalScale;
-    private RectTransform handleInsideRect;
-    private Vector3 handleInsideOriginalScale;
 
     private void Start()
     {
-        // Load saved difficulty or default to Easy
+        // Load saved difficulty
+        LoadDifficulty();
+
+        // Initialize icon animator FIRST (must store original positions before any updates)
+        if (iconAnimator != null)
+        {
+            iconAnimator.Initialize();
+        }
+
+        // Initialize text components
+        InitializeTextComponents();
+
+        // Initialize slider controller (this will trigger events that update iconAnimator)
+        if (sliderController != null)
+        {
+            // Subscribe to events BEFORE initializing to catch the initial event
+            sliderController.OnSliderValueChanged += HandleSliderValueChanged;
+            sliderController.OnDifficultySnapped += HandleDifficultySnapped;
+
+            // Initialize slider (this will trigger OnSliderValueChanged event)
+            sliderController.Initialize((int)currentDifficulty);
+        }
+
+        // Update play button color initially
+        UpdatePlayButtonColor();
+
+        // Initialize text rotation
+        UpdateTextRotation();
+    }
+
+    private void OnDestroy()
+    {
+        // Unsubscribe from slider events
+        if (sliderController != null)
+        {
+            sliderController.OnSliderValueChanged -= HandleSliderValueChanged;
+            sliderController.OnDifficultySnapped -= HandleDifficultySnapped;
+        }
+    }
+
+    private void LoadDifficulty()
+    {
         if (PlayerPrefs.HasKey("GameDifficulty"))
         {
             string savedDifficulty = PlayerPrefs.GetString("GameDifficulty");
@@ -62,53 +89,10 @@ public class MenuManager : MonoBehaviour
                 currentDifficulty = loadedDifficulty;
             }
         }
+    }
 
-        // Setup slider
-        if (difficultySlider != null)
-        {
-            difficultySlider.minValue = 0;
-            difficultySlider.maxValue = 2;
-            difficultySlider.wholeNumbers = false; // Allow smooth movement
-            difficultySlider.value = (int)currentDifficulty;
-            targetSliderValue = (int)currentDifficulty;
-            difficultySlider.onValueChanged.AddListener(OnDifficultySliderChanged);
-
-            // Add event triggers for pointer down/up
-            UnityEngine.EventSystems.EventTrigger trigger = difficultySlider.gameObject.GetComponent<UnityEngine.EventSystems.EventTrigger>();
-            if (trigger == null)
-            {
-                trigger = difficultySlider.gameObject.AddComponent<UnityEngine.EventSystems.EventTrigger>();
-            }
-
-            // Pointer down event
-            UnityEngine.EventSystems.EventTrigger.Entry pointerDownEntry = new UnityEngine.EventSystems.EventTrigger.Entry();
-            pointerDownEntry.eventID = UnityEngine.EventSystems.EventTriggerType.PointerDown;
-            pointerDownEntry.callback.AddListener((data) => { OnSliderPointerDown(); });
-            trigger.triggers.Add(pointerDownEntry);
-
-            // Pointer up event
-            UnityEngine.EventSystems.EventTrigger.Entry pointerUpEntry = new UnityEngine.EventSystems.EventTrigger.Entry();
-            pointerUpEntry.eventID = UnityEngine.EventSystems.EventTriggerType.PointerUp;
-            pointerUpEntry.callback.AddListener((data) => { OnSliderPointerUp(); });
-            trigger.triggers.Add(pointerUpEntry);
-
-            // Store original scales for pulse animation
-            if (sliderHandle != null)
-            {
-                handleOriginalScale = sliderHandle.localScale;
-            }
-
-            // Get HandleInside RectTransform
-            if (handleInsideImage != null)
-            {
-                handleInsideRect = handleInsideImage.GetComponent<RectTransform>();
-                if (handleInsideRect != null)
-                {
-                    handleInsideOriginalScale = handleInsideRect.localScale;
-                }
-            }
-        }
-
+    private void InitializeTextComponents()
+    {
         // Get RectTransform of difficulty texts
         if (difficultyText != null)
         {
@@ -129,127 +113,34 @@ public class MenuManager : MonoBehaviour
                 difficultyTextNextRect.localScale = textOriginalScale;
             }
         }
-
-        // Update UI to reflect current difficulty
-        UpdateDifficultyUI();
-        UpdateHandleColor();
-        UpdateTextRotation();
-
-        // Initialize icon animations
-        if (iconAnimator != null && difficultySlider != null)
-        {
-            Color initialColor = GetCurrentDifficultyColor();
-            iconAnimator.UpdateIconAnimations(difficultySlider.value, initialColor);
-        }
     }
 
-    private void Update()
+    private void HandleSliderValueChanged(float sliderValue, Color currentColor)
     {
-        // Smoothly snap to target value when not dragging
-        if (difficultySlider != null && isSnapping && !isDraggingSlider)
-        {
-            difficultySlider.value = Mathf.Lerp(difficultySlider.value, targetSliderValue, Time.deltaTime * sliderSnapSpeed);
-
-            // Update handle color, text rotation, and icon animations during snapping animation
-            UpdateHandleColor();
-            UpdateTextRotation();
-            if (iconAnimator != null)
-            {
-                Color currentColor = GetCurrentDifficultyColor();
-                iconAnimator.UpdateIconAnimations(difficultySlider.value, currentColor);
-            }
-
-            // Stop snapping when close enough
-            if (Mathf.Abs(difficultySlider.value - targetSliderValue) < 0.01f)
-            {
-                difficultySlider.value = targetSliderValue;
-                isSnapping = false;
-            }
-        }
-
-        // Animate handle pulse when user is not dragging
-        if (!isSliderBeingDragged)
-        {
-            handlePulseTimer += Time.deltaTime;
-            float normalizedTime = (handlePulseTimer % handlePulseDuration) / handlePulseDuration;
-
-            // Create a smooth pulse using sine wave (0 -> 1 -> 0)
-            float pulseValue = Mathf.Sin(normalizedTime * Mathf.PI);
-            float scale = Mathf.Lerp(1f, handlePulseScale, pulseValue);
-
-            // Animate Handle only (HandleInside will inherit the scale as a child)
-            if (sliderHandle != null)
-            {
-                sliderHandle.localScale = handleOriginalScale * scale;
-            }
-        }
-    }
-
-    private void OnSliderPointerDown()
-    {
-        isDraggingSlider = true;
-        isSnapping = false;
-        isSliderBeingDragged = true;
-
-        // Pause animation - don't reset scale, keep current size
-    }
-
-    private void OnSliderPointerUp()
-    {
-        isDraggingSlider = false;
-        isSliderBeingDragged = false;
-
-        // Snap to nearest value
-        if (difficultySlider != null)
-        {
-            targetSliderValue = Mathf.Round(difficultySlider.value);
-            isSnapping = true;
-
-            // Update difficulty based on snapped value
-            Difficulty newDifficulty = (Difficulty)(int)targetSliderValue;
-            if (newDifficulty != currentDifficulty)
-            {
-                currentDifficulty = newDifficulty;
-                UpdateDifficultyUI();
-            }
-        }
-    }
-
-    private void OnDifficultySliderChanged(float value)
-    {
-        // Update handle color, text rotation, and icon animations in real-time
-        UpdateHandleColor();
-        UpdateTextRotation();
-        UpdateDifficultyUI();
+        // Update icon animations
         if (iconAnimator != null)
         {
-            Color currentColor = GetCurrentDifficultyColor();
-            iconAnimator.UpdateIconAnimations(value, currentColor);
+            iconAnimator.UpdateIconAnimations(sliderValue, currentColor);
         }
 
-        // Update current difficulty when crossing thresholds
-        if (isDraggingSlider)
-        {
-            Difficulty previewDifficulty = (Difficulty)Mathf.RoundToInt(value);
-            if (previewDifficulty != currentDifficulty)
-            {
-                currentDifficulty = previewDifficulty;
-            }
-        }
+        // Update text rotation
+        UpdateTextRotation();
+
+        // Update play button color
+        UpdatePlayButtonColor(currentColor);
     }
 
-    private void UpdateDifficultyUI()
+    private void HandleDifficultySnapped(int difficultyValue)
     {
-        // Icon color is now updated in UpdateHandleColor() method
-        // This method is kept for potential future UI updates
+        currentDifficulty = (Difficulty)difficultyValue;
     }
 
     private void UpdateTextRotation()
     {
-        if (difficultySlider == null || difficultyTextRect == null)
+        if (sliderController == null || difficultyTextRect == null)
             return;
 
-        float sliderValue = difficultySlider.value;
+        float sliderValue = sliderController.SliderValue;
 
         // Determine which two difficulties we're between
         int lowerDifficulty = Mathf.FloorToInt(sliderValue);
@@ -317,49 +208,34 @@ public class MenuManager : MonoBehaviour
 
     private Color GetDifficultyColor(int difficultyIndex)
     {
+        if (sliderController == null)
+            return Color.white;
+
+        // Get colors from slider controller
+        Color easyColor = new Color(0.184f, 0.718f, 0.255f);
+        Color mediumColor = new Color(0.992f, 0.655f, 0.016f);
+        Color hardColor = new Color(0.996f, 0.373f, 0.337f);
+
         switch (difficultyIndex)
         {
-            case 0: return easyDifficultyColor;
-            case 1: return mediumDifficultyColor;
-            case 2: return hardDifficultyColor;
-            default: return easyDifficultyColor;
+            case 0: return easyColor;
+            case 1: return mediumColor;
+            case 2: return hardColor;
+            default: return easyColor;
         }
     }
 
-    private Color GetCurrentDifficultyColor()
+    private void UpdatePlayButtonColor()
     {
-        if (difficultySlider == null)
-            return easyDifficultyColor;
-
-        float sliderValue = difficultySlider.value;
-
-        // Interpolate color based on slider position
-        if (sliderValue <= 1f)
+        if (sliderController != null)
         {
-            // Between Easy (0) and Medium (1) - interpolate between green and orange
-            return Color.Lerp(easyDifficultyColor, mediumDifficultyColor, sliderValue);
-        }
-        else
-        {
-            // Between Medium (1) and Hard (2) - interpolate between orange and red
-            return Color.Lerp(mediumDifficultyColor, hardDifficultyColor, sliderValue - 1f);
+            Color currentColor = sliderController.GetCurrentDifficultyColor();
+            UpdatePlayButtonColor(currentColor);
         }
     }
 
-    private void UpdateHandleColor()
+    private void UpdatePlayButtonColor(Color targetColor)
     {
-        if (difficultySlider == null)
-            return;
-
-        Color targetColor = GetCurrentDifficultyColor();
-
-        // Update HandleInside color
-        if (handleInsideImage != null)
-        {
-            handleInsideImage.color = targetColor;
-        }
-
-        // Update Play button color
         if (playButton != null)
         {
             ColorBlock colors = playButton.colors;
