@@ -123,7 +123,8 @@ public class GameManager : MonoBehaviour
     }
 
     [Header("Button References")]
-    [SerializeField] private SimonButton[] buttons = new SimonButton[4];
+    [SerializeField] private SimonButton[] easyButtons = new SimonButton[3];
+    [SerializeField] private SimonButton[] normalButtons = new SimonButton[4];
 
     [Header("UI References")]
     [SerializeField] private TextMeshPro scoreNumberText2D;
@@ -144,7 +145,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI panelScoreDifficultyText;
 
     [Header("Game Elements to Fade")]
-    [SerializeField] private GameObject simonGameObject;
+    [SerializeField] private GameObject simonEasyGameObject;
+    [SerializeField] private GameObject simonNormalGameObject;
 
     [Header("Audio")]
     [SerializeField] private AudioSource audioSource;
@@ -194,6 +196,9 @@ public class GameManager : MonoBehaviour
     public int CurrentRound => currentRound;
     public int PlayerScore => playerScore;
 
+    private SimonButton[] CurrentButtons => difficulty == Difficulty.Easy ? easyButtons : normalButtons;
+    private GameObject CurrentSimonGameObject => difficulty == Difficulty.Easy ? simonEasyGameObject : simonNormalGameObject;
+
     private void Start()
     {
         // Load difficulty from PlayerPrefs if set
@@ -221,6 +226,17 @@ public class GameManager : MonoBehaviour
         LoadHighScores();
         UpdateHighScoreUI();
         UpdateTextModeUI();
+
+        // Activate/deactivate Simon GameObjects based on difficulty
+        if (simonEasyGameObject != null)
+        {
+            simonEasyGameObject.SetActive(difficulty == Difficulty.Easy);
+        }
+
+        if (simonNormalGameObject != null)
+        {
+            simonNormalGameObject.SetActive(difficulty != Difficulty.Easy);
+        }
 
         if (panelGameOver != null)
         {
@@ -307,6 +323,17 @@ public class GameManager : MonoBehaviour
             }
             triangle2.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
             triangle2.SetActive(false);
+        }
+
+        // Activate/deactivate Simon GameObjects based on difficulty
+        if (simonEasyGameObject != null)
+        {
+            simonEasyGameObject.SetActive(difficulty == Difficulty.Easy);
+        }
+
+        if (simonNormalGameObject != null)
+        {
+            simonNormalGameObject.SetActive(difficulty != Difficulty.Easy);
         }
 
         RestoreGameElementsAlpha();
@@ -513,7 +540,7 @@ public class GameManager : MonoBehaviour
 
         for (int i = 0; i < 2; i++)
         {
-            foreach (SimonButton button in buttons)
+            foreach (SimonButton button in CurrentButtons)
             {
                 if (button != null)
                 {
@@ -523,7 +550,7 @@ public class GameManager : MonoBehaviour
 
             yield return new WaitForSeconds(0.3f);
 
-            foreach (SimonButton button in buttons)
+            foreach (SimonButton button in CurrentButtons)
             {
                 if (button != null)
                 {
@@ -566,7 +593,7 @@ public class GameManager : MonoBehaviour
 
     private SimonButton GetButtonByColor(ButtonColor color)
     {
-        foreach (SimonButton button in buttons)
+        foreach (SimonButton button in CurrentButtons)
         {
             if (button != null && button.ButtonColor == color)
             {
@@ -578,7 +605,7 @@ public class GameManager : MonoBehaviour
 
     private void SetButtonsInteractable(bool interactable)
     {
-        foreach (SimonButton button in buttons)
+        foreach (SimonButton button in CurrentButtons)
         {
             if (button != null)
             {
@@ -693,9 +720,11 @@ public class GameManager : MonoBehaviour
         TextMeshPro[] simonTextMeshPros = null;
         Color[] textOriginalColors = null;
 
-        if (simonGameObject != null)
+        GameObject currentSimon = CurrentSimonGameObject;
+
+        if (currentSimon != null)
         {
-            simonSpriteRenderers = simonGameObject.GetComponentsInChildren<SpriteRenderer>();
+            simonSpriteRenderers = currentSimon.GetComponentsInChildren<SpriteRenderer>();
             if (simonSpriteRenderers != null && simonSpriteRenderers.Length > 0)
             {
                 spriteOriginalColors = new Color[simonSpriteRenderers.Length];
@@ -705,7 +734,7 @@ public class GameManager : MonoBehaviour
                 }
             }
 
-            simonTextMeshPros = simonGameObject.GetComponentsInChildren<TextMeshPro>();
+            simonTextMeshPros = currentSimon.GetComponentsInChildren<TextMeshPro>();
             if (simonTextMeshPros != null && simonTextMeshPros.Length > 0)
             {
                 textOriginalColors = new Color[simonTextMeshPros.Length];
@@ -781,9 +810,11 @@ public class GameManager : MonoBehaviour
 
     private void RestoreGameElementsAlpha()
     {
-        if (simonGameObject != null)
+        GameObject currentSimon = CurrentSimonGameObject;
+
+        if (currentSimon != null)
         {
-            SpriteRenderer[] spriteRenderers = simonGameObject.GetComponentsInChildren<SpriteRenderer>();
+            SpriteRenderer[] spriteRenderers = currentSimon.GetComponentsInChildren<SpriteRenderer>();
             if (spriteRenderers != null)
             {
                 foreach (SpriteRenderer spriteRenderer in spriteRenderers)
@@ -797,7 +828,7 @@ public class GameManager : MonoBehaviour
                 }
             }
 
-            TextMeshPro[] textMeshPros = simonGameObject.GetComponentsInChildren<TextMeshPro>();
+            TextMeshPro[] textMeshPros = currentSimon.GetComponentsInChildren<TextMeshPro>();
             if (textMeshPros != null)
             {
                 foreach (TextMeshPro textMeshPro in textMeshPros)
