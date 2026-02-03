@@ -13,6 +13,9 @@ public class DifficultyIconAnimator : MonoBehaviour
     [SerializeField] private RectTransform hornLeft;
     [SerializeField] private RectTransform hornRight;
 
+    [Header("Dependencies")]
+    [SerializeField] private DifficultyColorProvider colorProvider;
+
     [Header("Animation Settings")]
     [SerializeField] private float mouthRotationAngle = 20f;
     [SerializeField] private float cheekbonesYOffset = -17f;
@@ -48,8 +51,11 @@ public class DifficultyIconAnimator : MonoBehaviour
     /// <summary>
     /// Updates all icon animations based on slider value (0 = Easy, 1 = Medium, 2 = Hard)
     /// </summary>
-    public void UpdateIconAnimations(float sliderValue, Color targetColor)
+    public void UpdateIconAnimations(float sliderValue)
     {
+        // Get color from color provider
+        Color targetColor = GetColorForSliderValue(sliderValue);
+
         UpdateIconColor(targetColor);
         UpdateMouthRotation(sliderValue);
         UpdateCheekbonesPosition(sliderValue);
@@ -58,10 +64,18 @@ public class DifficultyIconAnimator : MonoBehaviour
         UpdateHornsRotation(sliderValue);
     }
 
+    private Color GetColorForSliderValue(float sliderValue)
+    {
+        if (colorProvider == null)
+            return Color.white;
+
+        return colorProvider.GetColorForSliderValue(sliderValue);
+    }
+
     /// <summary>
     /// Updates the icon color based on the provided color
     /// </summary>
-    public void UpdateIconColor(Color targetColor)
+    private void UpdateIconColor(Color targetColor)
     {
         // Update DifficultyIcon color tint
         if (difficultyIcon != null)

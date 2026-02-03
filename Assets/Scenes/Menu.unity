@@ -615,6 +615,7 @@ MonoBehaviour:
   eyes: {fileID: 2031298567}
   hornLeft: {fileID: 92736213}
   hornRight: {fileID: 810786393}
+  colorProvider: {fileID: 548035768}
   mouthRotationAngle: 20
   cheekbonesYOffset: -17
   eyesEasyOffset: {x: 11, y: 4}

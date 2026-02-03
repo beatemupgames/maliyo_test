@@ -88,7 +88,7 @@ public class MenuManager : MonoBehaviour
         // Update icon animations
         if (iconAnimator != null)
         {
-            iconAnimator.UpdateIconAnimations(sliderValue, currentColor);
+            iconAnimator.UpdateIconAnimations(sliderValue);
         }
 
         // Update text rotation
