@@ -212,7 +212,6 @@ public class MenuManager : MonoBehaviour
             {
                 currentDifficulty = newDifficulty;
                 UpdateDifficultyUI();
-                PlayClickSound();
             }
         }
     }
@@ -228,14 +227,13 @@ public class MenuManager : MonoBehaviour
         UpdateEyesPosition();
         UpdateEyebrowsRotation();
 
-        // Play sound when crossing difficulty thresholds
+        // Update current difficulty when crossing thresholds
         if (isDraggingSlider)
         {
             Difficulty previewDifficulty = (Difficulty)Mathf.RoundToInt(value);
             if (previewDifficulty != currentDifficulty)
             {
                 currentDifficulty = previewDifficulty;
-                PlayClickSound();
             }
         }
     }
