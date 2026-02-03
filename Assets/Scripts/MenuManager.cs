@@ -23,6 +23,8 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private Image handleInsideImage; // Reference to HandleInside
     [SerializeField] private Button playButton; // Reference to Play button
     [SerializeField] private RectTransform mouth; // Reference to Mouth component
+    [SerializeField] private Image cheekbones; // Reference to cheekbones
+    [SerializeField] private Image[] eyebrows; // Reference to eyebrows
     [SerializeField] private Sprite easyDifficultySprite;
     [SerializeField] private Sprite mediumDifficultySprite;
     [SerializeField] private Sprite hardDifficultySprite;
@@ -38,6 +40,7 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private float sliderSnapSpeed = 10f;
     [SerializeField] private float textRotationAmount = 30f; // Distance for full rotation between difficulties
     [SerializeField] private float mouthRotationAngle = 20f; // Rotation angle for mouth at extremes (Easy/Hard)
+    [SerializeField] private float cheekbonesYOffset = -17f; // Y offset for cheekbones at Medium/Hard
 
     private Difficulty currentDifficulty = Difficulty.Easy;
     private bool isDraggingSlider = false;
@@ -47,6 +50,8 @@ public class MenuManager : MonoBehaviour
     private RectTransform difficultyTextNextRect;
     private Vector2 textOriginalPosition;
     private Vector3 textOriginalScale;
+    private RectTransform cheekbonesRect;
+    private Vector2 cheekbonesOriginalPosition;
 
     private void Start()
     {
@@ -129,11 +134,22 @@ public class MenuManager : MonoBehaviour
             }
         }
 
+        // Get RectTransform of cheekbones
+        if (cheekbones != null)
+        {
+            cheekbonesRect = cheekbones.GetComponent<RectTransform>();
+            if (cheekbonesRect != null)
+            {
+                cheekbonesOriginalPosition = cheekbonesRect.anchoredPosition;
+            }
+        }
+
         // Update UI to reflect current difficulty
         UpdateDifficultyUI();
         UpdateHandleColor();
         UpdateTextRotation();
         UpdateMouthRotation();
+        UpdateCheekbonesPosition();
     }
 
     private void Update()
@@ -143,10 +159,11 @@ public class MenuManager : MonoBehaviour
         {
             difficultySlider.value = Mathf.Lerp(difficultySlider.value, targetSliderValue, Time.deltaTime * sliderSnapSpeed);
 
-            // Update handle color, text rotation, and mouth rotation during snapping animation
+            // Update handle color, text rotation, mouth rotation, and cheekbones position during snapping animation
             UpdateHandleColor();
             UpdateTextRotation();
             UpdateMouthRotation();
+            UpdateCheekbonesPosition();
 
             // Stop snapping when close enough
             if (Mathf.Abs(difficultySlider.value - targetSliderValue) < 0.01f)
@@ -186,11 +203,12 @@ public class MenuManager : MonoBehaviour
 
     private void OnDifficultySliderChanged(float value)
     {
-        // Update handle color, text rotation, icon, and mouth rotation in real-time
+        // Update handle color, text rotation, icon, mouth rotation, and cheekbones position in real-time
         UpdateHandleColor();
         UpdateTextRotation();
         UpdateDifficultyUI();
         UpdateMouthRotation();
+        UpdateCheekbonesPosition();
 
         // Play sound when crossing difficulty thresholds
         if (isDraggingSlider)
@@ -326,6 +344,24 @@ public class MenuManager : MonoBehaviour
             difficultyIcon.color = targetColor;
         }
 
+        // Update cheekbones color
+        if (cheekbones != null)
+        {
+            cheekbones.color = targetColor;
+        }
+
+        // Update eyebrows color
+        if (eyebrows != null)
+        {
+            foreach (Image eyebrow in eyebrows)
+            {
+                if (eyebrow != null)
+                {
+                    eyebrow.color = targetColor;
+                }
+            }
+        }
+
         // Update Play button color
         if (playButton != null)
         {
@@ -353,6 +389,34 @@ public class MenuManager : MonoBehaviour
 
         // Apply rotation
         mouth.localRotation = Quaternion.Euler(0f, 0f, targetRotation);
+    }
+
+    private void UpdateCheekbonesPosition()
+    {
+        if (cheekbonesRect == null || difficultySlider == null)
+            return;
+
+        float sliderValue = difficultySlider.value;
+
+        // Calculate Y position based on slider position
+        // Easy (0.0) = 0 (original position)
+        // Medium (1.0) = -17
+        // Hard (2.0) = -17
+        float targetYOffset;
+
+        if (sliderValue < 1f)
+        {
+            // Between Easy and Medium: interpolate from 0 to -17
+            targetYOffset = Mathf.Lerp(0f, cheekbonesYOffset, sliderValue);
+        }
+        else
+        {
+            // Between Medium and Hard: stay at -17
+            targetYOffset = cheekbonesYOffset;
+        }
+
+        // Apply position
+        cheekbonesRect.anchoredPosition = new Vector2(cheekbonesOriginalPosition.x, cheekbonesOriginalPosition.y + targetYOffset);
     }
 
     public void OnPlayButton()
