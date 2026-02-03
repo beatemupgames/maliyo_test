@@ -7,7 +7,8 @@ public class DifficultyIconAnimator : MonoBehaviour
     [SerializeField] private Image difficultyIcon;
     [SerializeField] private RectTransform mouth;
     [SerializeField] private Image cheekbones;
-    [SerializeField] private Image[] eyebrows; // eyebrows[0] is EyebrowLeft, eyebrows[1] is EyebrowRight
+    [SerializeField] private Image eyebrowLeft;
+    [SerializeField] private Image eyebrowRight;
     [SerializeField] private RectTransform eyes;
     [SerializeField] private RectTransform hornLeft;
     [SerializeField] private RectTransform hornRight;
@@ -21,11 +22,6 @@ public class DifficultyIconAnimator : MonoBehaviour
     [SerializeField] private float eyebrowLeftHardRotation = -10f;
     [SerializeField] private float hornLeftEasyMediumRotation = 30f;
     [SerializeField] private float hornLeftHardRotation = 0f;
-
-    [Header("Difficulty Colors")]
-    [SerializeField] private Color easyDifficultyColor = new Color(0.184f, 0.718f, 0.255f); // #2FB741
-    [SerializeField] private Color mediumDifficultyColor = new Color(0.992f, 0.655f, 0.016f); // #FDA704
-    [SerializeField] private Color hardDifficultyColor = new Color(0.996f, 0.373f, 0.337f); // #FE5F56
 
     private RectTransform cheekbonesRect;
     private Vector2 cheekbonesOriginalPosition;
@@ -52,9 +48,9 @@ public class DifficultyIconAnimator : MonoBehaviour
     /// <summary>
     /// Updates all icon animations based on slider value (0 = Easy, 1 = Medium, 2 = Hard)
     /// </summary>
-    public void UpdateIconAnimations(float sliderValue)
+    public void UpdateIconAnimations(float sliderValue, Color targetColor)
     {
-        UpdateIconColor(sliderValue);
+        UpdateIconColor(targetColor);
         UpdateMouthRotation(sliderValue);
         UpdateCheekbonesPosition(sliderValue);
         UpdateEyesPosition(sliderValue);
@@ -63,24 +59,10 @@ public class DifficultyIconAnimator : MonoBehaviour
     }
 
     /// <summary>
-    /// Updates the icon color based on difficulty
+    /// Updates the icon color based on the provided color
     /// </summary>
-    public void UpdateIconColor(float sliderValue)
+    public void UpdateIconColor(Color targetColor)
     {
-        Color targetColor;
-
-        // Interpolate color based on slider position
-        if (sliderValue <= 1f)
-        {
-            // Between Easy (0) and Medium (1) - interpolate between green and orange
-            targetColor = Color.Lerp(easyDifficultyColor, mediumDifficultyColor, sliderValue);
-        }
-        else
-        {
-            // Between Medium (1) and Hard (2) - interpolate between orange and red
-            targetColor = Color.Lerp(mediumDifficultyColor, hardDifficultyColor, sliderValue - 1f);
-        }
-
         // Update DifficultyIcon color tint
         if (difficultyIcon != null)
         {
@@ -94,30 +76,14 @@ public class DifficultyIconAnimator : MonoBehaviour
         }
 
         // Update eyebrows color
-        if (eyebrows != null)
+        if (eyebrowLeft != null)
         {
-            foreach (Image eyebrow in eyebrows)
-            {
-                if (eyebrow != null)
-                {
-                    eyebrow.color = targetColor;
-                }
-            }
+            eyebrowLeft.color = targetColor;
         }
-    }
 
-    /// <summary>
-    /// Gets the interpolated color based on difficulty
-    /// </summary>
-    public Color GetDifficultyColor(float sliderValue)
-    {
-        if (sliderValue <= 1f)
+        if (eyebrowRight != null)
         {
-            return Color.Lerp(easyDifficultyColor, mediumDifficultyColor, sliderValue);
-        }
-        else
-        {
-            return Color.Lerp(mediumDifficultyColor, hardDifficultyColor, sliderValue - 1f);
+            eyebrowRight.color = targetColor;
         }
     }
 
@@ -190,9 +156,6 @@ public class DifficultyIconAnimator : MonoBehaviour
 
     private void UpdateEyebrowsRotation(float sliderValue)
     {
-        if (eyebrows == null || eyebrows.Length < 2)
-            return;
-
         // Calculate rotation based on slider position
         // Easy (0.0) = eyebrowLeftEasyRotation (default +20° left/counter-clockwise)
         // Medium (1.0) = eyebrowLeftMediumRotation (default -5°)
@@ -210,20 +173,20 @@ public class DifficultyIconAnimator : MonoBehaviour
             targetRotationLeft = Mathf.Lerp(eyebrowLeftMediumRotation, eyebrowLeftHardRotation, sliderValue - 1f);
         }
 
-        // Apply rotation to EyebrowLeft (first element of eyebrows array)
-        if (eyebrows[0] != null)
+        // Apply rotation to EyebrowLeft
+        if (eyebrowLeft != null)
         {
-            RectTransform eyebrowLeftRect = eyebrows[0].GetComponent<RectTransform>();
+            RectTransform eyebrowLeftRect = eyebrowLeft.GetComponent<RectTransform>();
             if (eyebrowLeftRect != null)
             {
                 eyebrowLeftRect.localRotation = Quaternion.Euler(0f, 0f, targetRotationLeft);
             }
         }
 
-        // Apply inverse rotation to EyebrowRight (second element of eyebrows array)
-        if (eyebrows[1] != null)
+        // Apply inverse rotation to EyebrowRight
+        if (eyebrowRight != null)
         {
-            RectTransform eyebrowRightRect = eyebrows[1].GetComponent<RectTransform>();
+            RectTransform eyebrowRightRect = eyebrowRight.GetComponent<RectTransform>();
             if (eyebrowRightRect != null)
             {
                 // Rotate in opposite direction

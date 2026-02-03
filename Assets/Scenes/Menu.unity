@@ -610,9 +610,8 @@ MonoBehaviour:
   difficultyIcon: {fileID: 1795424966}
   mouth: {fileID: 317633496}
   cheekbones: {fileID: 800052665}
-  eyebrows:
-  - {fileID: 797857222}
-  - {fileID: 1178690340}
+  eyebrowLeft: {fileID: 797857222}
+  eyebrowRight: {fileID: 1178690340}
   eyes: {fileID: 2031298567}
   hornLeft: {fileID: 92736213}
   hornRight: {fileID: 810786393}
@@ -624,9 +623,6 @@ MonoBehaviour:
   eyebrowLeftHardRotation: -10
   hornLeftEasyMediumRotation: 30
   hornLeftHardRotation: 0
-  easyDifficultyColor: {r: 0.184, g: 0.718, b: 0.255, a: 1}
-  mediumDifficultyColor: {r: 0.992, g: 0.655, b: 0.016, a: 1}
-  hardDifficultyColor: {r: 0.996, g: 0.373, b: 0.337, a: 1}
 --- !u!1 &441170751
 GameObject:
   m_ObjectHideFlags: 0
@@ -769,7 +765,7 @@ MonoBehaviour:
   sliderHandle: {fileID: 1222081360}
   handleInsideImage: {fileID: 1584325407}
   playButton: {fileID: 818127507}
-  iconAnimator: {fileID: 0}
+  iconAnimator: {fileID: 346942023}
   easyDifficultyColor: {r: 0.184, g: 0.718, b: 0.255, a: 1}
   mediumDifficultyColor: {r: 0.992, g: 0.655, b: 0.016, a: 1}
   hardDifficultyColor: {r: 0.996, g: 0.373, b: 0.337, a: 1}

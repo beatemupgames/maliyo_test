@@ -96,11 +96,6 @@ public class MenuManager : MonoBehaviour
             if (sliderHandle != null)
             {
                 handleOriginalScale = sliderHandle.localScale;
-                Debug.Log($"Handle found! Original scale: {handleOriginalScale}");
-            }
-            else
-            {
-                Debug.LogWarning("Slider Handle not assigned in Inspector!");
             }
 
             // Get HandleInside RectTransform
@@ -110,12 +105,7 @@ public class MenuManager : MonoBehaviour
                 if (handleInsideRect != null)
                 {
                     handleInsideOriginalScale = handleInsideRect.localScale;
-                    Debug.Log($"HandleInside found! Original scale: {handleInsideOriginalScale}");
                 }
-            }
-            else
-            {
-                Debug.LogWarning("HandleInside Image not assigned in Inspector!");
             }
         }
 
@@ -148,7 +138,8 @@ public class MenuManager : MonoBehaviour
         // Initialize icon animations
         if (iconAnimator != null && difficultySlider != null)
         {
-            iconAnimator.UpdateIconAnimations(difficultySlider.value);
+            Color initialColor = GetCurrentDifficultyColor();
+            iconAnimator.UpdateIconAnimations(difficultySlider.value, initialColor);
         }
     }
 
@@ -164,7 +155,8 @@ public class MenuManager : MonoBehaviour
             UpdateTextRotation();
             if (iconAnimator != null)
             {
-                iconAnimator.UpdateIconAnimations(difficultySlider.value);
+                Color currentColor = GetCurrentDifficultyColor();
+                iconAnimator.UpdateIconAnimations(difficultySlider.value, currentColor);
             }
 
             // Stop snapping when close enough
@@ -231,7 +223,8 @@ public class MenuManager : MonoBehaviour
         UpdateDifficultyUI();
         if (iconAnimator != null)
         {
-            iconAnimator.UpdateIconAnimations(value);
+            Color currentColor = GetCurrentDifficultyColor();
+            iconAnimator.UpdateIconAnimations(value, currentColor);
         }
 
         // Update current difficulty when crossing thresholds
@@ -333,27 +326,32 @@ public class MenuManager : MonoBehaviour
         }
     }
 
-    private void UpdateHandleColor()
+    private Color GetCurrentDifficultyColor()
     {
         if (difficultySlider == null)
-            return;
+            return easyDifficultyColor;
 
         float sliderValue = difficultySlider.value;
-        Color targetColor;
 
         // Interpolate color based on slider position
         if (sliderValue <= 1f)
         {
             // Between Easy (0) and Medium (1) - interpolate between green and orange
-            float t = sliderValue; // 0 to 1
-            targetColor = Color.Lerp(easyDifficultyColor, mediumDifficultyColor, t);
+            return Color.Lerp(easyDifficultyColor, mediumDifficultyColor, sliderValue);
         }
         else
         {
             // Between Medium (1) and Hard (2) - interpolate between orange and red
-            float t = sliderValue - 1f; // 0 to 1
-            targetColor = Color.Lerp(mediumDifficultyColor, hardDifficultyColor, t);
+            return Color.Lerp(mediumDifficultyColor, hardDifficultyColor, sliderValue - 1f);
         }
+    }
+
+    private void UpdateHandleColor()
+    {
+        if (difficultySlider == null)
+            return;
+
+        Color targetColor = GetCurrentDifficultyColor();
 
         // Update HandleInside color
         if (handleInsideImage != null)
