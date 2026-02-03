@@ -201,27 +201,8 @@ public class MenuManager : MonoBehaviour
 
     private void UpdateDifficultyUI()
     {
-        // This method is simplified - text content is now managed by UpdateTextRotation
-        Difficulty roundedDifficulty = (Difficulty)Mathf.RoundToInt(difficultySlider != null ? difficultySlider.value : 0);
-        Sprite difficultySprite = mediumDifficultySprite;
-
-        switch (roundedDifficulty)
-        {
-            case Difficulty.Easy:
-                difficultySprite = easyDifficultySprite;
-                break;
-            case Difficulty.Medium:
-                difficultySprite = mediumDifficultySprite;
-                break;
-            case Difficulty.Hard:
-                difficultySprite = hardDifficultySprite;
-                break;
-        }
-
-        if (difficultyIcon != null && difficultySprite != null)
-        {
-            difficultyIcon.sprite = difficultySprite;
-        }
+        // Icon color is now updated in UpdateHandleColor() method
+        // This method is kept for potential future UI updates
     }
 
     private void UpdateTextRotation()
@@ -332,6 +313,12 @@ public class MenuManager : MonoBehaviour
         if (handleInsideImage != null)
         {
             handleInsideImage.color = targetColor;
+        }
+
+        // Update DifficultyIcon color tint
+        if (difficultyIcon != null)
+        {
+            difficultyIcon.color = targetColor;
         }
 
         // Update Play button color
