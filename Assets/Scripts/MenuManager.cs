@@ -22,6 +22,7 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private Image difficultyIcon;
     [SerializeField] private Image handleInsideImage; // Reference to HandleInside
     [SerializeField] private Button playButton; // Reference to Play button
+    [SerializeField] private RectTransform mouth; // Reference to Mouth component
     [SerializeField] private Sprite easyDifficultySprite;
     [SerializeField] private Sprite mediumDifficultySprite;
     [SerializeField] private Sprite hardDifficultySprite;
@@ -36,6 +37,7 @@ public class MenuManager : MonoBehaviour
     [Header("Slider Animation")]
     [SerializeField] private float sliderSnapSpeed = 10f;
     [SerializeField] private float textRotationAmount = 30f; // Distance for full rotation between difficulties
+    [SerializeField] private float mouthRotationAngle = 20f; // Rotation angle for mouth at extremes (Easy/Hard)
 
     private Difficulty currentDifficulty = Difficulty.Easy;
     private bool isDraggingSlider = false;
@@ -131,6 +133,7 @@ public class MenuManager : MonoBehaviour
         UpdateDifficultyUI();
         UpdateHandleColor();
         UpdateTextRotation();
+        UpdateMouthRotation();
     }
 
     private void Update()
@@ -140,9 +143,10 @@ public class MenuManager : MonoBehaviour
         {
             difficultySlider.value = Mathf.Lerp(difficultySlider.value, targetSliderValue, Time.deltaTime * sliderSnapSpeed);
 
-            // Update handle color and text rotation during snapping animation
+            // Update handle color, text rotation, and mouth rotation during snapping animation
             UpdateHandleColor();
             UpdateTextRotation();
+            UpdateMouthRotation();
 
             // Stop snapping when close enough
             if (Mathf.Abs(difficultySlider.value - targetSliderValue) < 0.01f)
@@ -182,10 +186,11 @@ public class MenuManager : MonoBehaviour
 
     private void OnDifficultySliderChanged(float value)
     {
-        // Update handle color, text rotation, and icon in real-time
+        // Update handle color, text rotation, icon, and mouth rotation in real-time
         UpdateHandleColor();
         UpdateTextRotation();
         UpdateDifficultyUI();
+        UpdateMouthRotation();
 
         // Play sound when crossing difficulty thresholds
         if (isDraggingSlider)
@@ -331,6 +336,23 @@ public class MenuManager : MonoBehaviour
             colors.selectedColor = targetColor;
             playButton.colors = colors;
         }
+    }
+
+    private void UpdateMouthRotation()
+    {
+        if (mouth == null || difficultySlider == null)
+            return;
+
+        float sliderValue = difficultySlider.value;
+
+        // Calculate rotation based on slider position
+        // Medium (1.0) = 0°
+        // Easy (0.0) = -20° (clockwise)
+        // Hard (2.0) = +20° (counter-clockwise)
+        float targetRotation = (sliderValue - 1f) * mouthRotationAngle;
+
+        // Apply rotation
+        mouth.localRotation = Quaternion.Euler(0f, 0f, targetRotation);
     }
 
     public void OnPlayButton()
