@@ -134,7 +134,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI textMode;
     [SerializeField] private TextMeshProUGUI modeText;
     [SerializeField] private UnityEngine.UI.Image difficultyIcon;
-    [SerializeField] private GameObject panelGameOver;
+    [SerializeField] private PanelGameOverManager panelGameOverManager;
     [SerializeField] private PanelScoreManager panelScoreManager;
 
     [Header("Game Elements to Fade")]
@@ -143,7 +143,6 @@ public class GameManager : MonoBehaviour
 
     [Header("Audio")]
     [SerializeField] private AudioSource audioSource;
-    [SerializeField] private AudioClip gameOverSound;
     [SerializeField] private AudioClip clickSound;
 
     [Header("Game Settings")]
@@ -157,8 +156,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Sprite hardDifficultySprite;
     [SerializeField] private float timeBetweenButtons = 0.6f;
     [SerializeField] private float buttonPressDuration = 0.4f;
-    [SerializeField] private float gameOverFadeDuration = 0.3f;
-    [SerializeField] private float gameOverFadeOutDuration = 0.15f;
     [SerializeField] private float scoreWaitDuration = 1.0f;
     [SerializeField] private float scoreFadeInDuration = 0.3f;
     [SerializeField] private float simultaneousButtonDelay = 0.05f;
@@ -238,9 +235,9 @@ public class GameManager : MonoBehaviour
             simonNormalGameObject.transform.rotation = Quaternion.identity;
         }
 
-        if (panelGameOver != null)
+        if (panelGameOverManager != null)
         {
-            panelGameOver.SetActive(false);
+            panelGameOverManager.gameObject.SetActive(false);
         }
 
         if (panelScoreManager != null)
@@ -259,9 +256,9 @@ public class GameManager : MonoBehaviour
         playerScore = 0;
         currentState = GameState.Idle;
 
-        if (panelGameOver != null)
+        if (panelGameOverManager != null)
         {
-            panelGameOver.SetActive(false);
+            panelGameOverManager.gameObject.SetActive(false);
         }
 
         if (panelScoreManager != null)
@@ -477,9 +474,9 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator GameOverSequenceCoroutine()
     {
-        if (audioSource != null && gameOverSound != null)
+        if (panelGameOverManager != null)
         {
-            audioSource.PlayOneShot(gameOverSound);
+            panelGameOverManager.PlayGameOverSound();
         }
 
         // Start score text red animation
@@ -508,16 +505,11 @@ public class GameManager : MonoBehaviour
             yield return new WaitForSeconds(0.3f);
         }
 
-        if (panelGameOver != null)
+        if (panelGameOverManager != null)
         {
-            panelGameOver.SetActive(true);
-            yield return StartCoroutine(FadeInPanelCoroutine());
+            panelGameOverManager.ShowPanel();
+            yield return StartCoroutine(panelGameOverManager.FadeInCoroutine());
         }
-    }
-
-    private IEnumerator FadeInPanelCoroutine()
-    {
-        yield return StartCoroutine(FadeInPanelCoroutine(panelGameOver, gameOverFadeDuration));
     }
 
     private void ActivateButton(ButtonColor buttonColor)
@@ -580,10 +572,10 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator NoThanksSequenceCoroutine()
     {
-        if (panelGameOver != null)
+        if (panelGameOverManager != null)
         {
-            yield return StartCoroutine(FadeOutPanelCoroutine(panelGameOver, gameOverFadeOutDuration));
-            panelGameOver.SetActive(false);
+            yield return StartCoroutine(panelGameOverManager.FadeOutCoroutine());
+            panelGameOverManager.HidePanel();
         }
 
         yield return new WaitForSeconds(scoreWaitDuration);
@@ -607,49 +599,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private IEnumerator FadeOutPanelCoroutine(GameObject panel, float duration)
-    {
-        CanvasGroup canvasGroup = panel.GetComponent<CanvasGroup>();
-
-        if (canvasGroup == null)
-        {
-            canvasGroup = panel.AddComponent<CanvasGroup>();
-        }
-
-        float elapsedTime = 0f;
-        canvasGroup.alpha = 1f;
-
-        while (elapsedTime < duration)
-        {
-            elapsedTime += Time.deltaTime;
-            canvasGroup.alpha = Mathf.Lerp(1f, 0f, elapsedTime / duration);
-            yield return null;
-        }
-
-        canvasGroup.alpha = 0f;
-    }
-
-    private IEnumerator FadeInPanelCoroutine(GameObject panel, float duration)
-    {
-        CanvasGroup canvasGroup = panel.GetComponent<CanvasGroup>();
-
-        if (canvasGroup == null)
-        {
-            canvasGroup = panel.AddComponent<CanvasGroup>();
-        }
-
-        float elapsedTime = 0f;
-        canvasGroup.alpha = 0f;
-
-        while (elapsedTime < duration)
-        {
-            elapsedTime += Time.deltaTime;
-            canvasGroup.alpha = Mathf.Lerp(0f, 1f, elapsedTime / duration);
-            yield return null;
-        }
-
-        canvasGroup.alpha = 1f;
-    }
 
     private IEnumerator FadeOutGameElementsCoroutine(float duration)
     {
