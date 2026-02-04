@@ -402,16 +402,27 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        StartCoroutine(HandlePlayerInputCoroutine(buttonPressed));
+        // Check input validity immediately to prevent multiple simultaneous inputs
+        bool isCorrect = CheckPlayerInput(buttonPressed);
+
+        if (!isCorrect)
+        {
+            // Change state immediately on wrong input to block further clicks
+            currentState = GameState.GameOver;
+        }
+
+        // Block buttons immediately to prevent multiple inputs during animation
+        SetButtonsInteractable(false);
+        StartCoroutine(HandlePlayerInputCoroutine(buttonPressed, isCorrect));
     }
 
-    private IEnumerator HandlePlayerInputCoroutine(ButtonColor buttonPressed)
+    private IEnumerator HandlePlayerInputCoroutine(ButtonColor buttonPressed, bool isCorrect)
     {
         ActivateButton(buttonPressed);
         yield return new WaitForSeconds(buttonPressDuration);
         DeactivateButton(buttonPressed);
 
-        if (CheckPlayerInput(buttonPressed))
+        if (isCorrect)
         {
             OnPlayerCorrect();
         }
@@ -453,6 +464,8 @@ public class GameManager : MonoBehaviour
 
         if (currentStep.buttons.Count > 1 && currentStepPressedButtons.Count < currentStep.buttons.Count)
         {
+            // Re-enable buttons for the next button in the multi-button step
+            SetButtonsInteractable(true);
             return;
         }
 
@@ -465,11 +478,17 @@ public class GameManager : MonoBehaviour
             UpdateScoreUI();
             StartNextRound();
         }
+        else
+        {
+            // Re-enable buttons for the next step in the sequence
+            SetButtonsInteractable(true);
+        }
     }
 
     private void OnPlayerFail()
     {
-        currentState = GameState.GameOver;
+        // State is already set to GameOver in OnPlayerPressButton
+        // Ensure buttons stay disabled
         SetButtonsInteractable(false);
         SaveHighScore();
         StartCoroutine(GameOverSequenceCoroutine());

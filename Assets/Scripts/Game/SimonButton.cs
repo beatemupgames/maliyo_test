@@ -13,6 +13,7 @@ public class SimonButton : MonoBehaviour
 
     private Vector3 originalScale;
     private Color originalColor;
+    private Collider2D buttonCollider;
 
     public GameManager.ButtonColor ButtonColor => buttonColor;
 
@@ -29,6 +30,8 @@ public class SimonButton : MonoBehaviour
         {
             originalColor = spriteRenderer.color;
         }
+
+        buttonCollider = GetComponent<Collider2D>();
     }
 
     private void Start()
@@ -89,6 +92,9 @@ public class SimonButton : MonoBehaviour
 
     public void SetInteractable(bool interactable)
     {
-        enabled = interactable;
+        if (buttonCollider != null)
+        {
+            buttonCollider.enabled = interactable;
+        }
     }
 }
