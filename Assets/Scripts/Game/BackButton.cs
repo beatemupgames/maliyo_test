@@ -13,13 +13,21 @@ public class BackButton : MonoBehaviour
     #region Public Methods
 
     /// <summary>
-    /// Navigates back to the target scene (typically the main menu).
+    /// Navigates back to the target scene (typically the main menu) with fade transition.
     /// Called when the back button is clicked.
     /// </summary>
     public void GoBack()
     {
-        // Load the target scene
-        SceneManager.LoadScene(targetSceneName);
+        // Fade out and load the target scene
+        if (SceneFadeManager.Instance != null)
+        {
+            SceneFadeManager.Instance.FadeOutAndLoadScene(targetSceneName);
+        }
+        else
+        {
+            // Fallback if no fade manager exists
+            SceneManager.LoadScene(targetSceneName);
+        }
     }
 
     #endregion

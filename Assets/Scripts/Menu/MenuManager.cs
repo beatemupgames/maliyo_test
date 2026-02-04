@@ -134,7 +134,7 @@ public class MenuManager : MonoBehaviour
 
     /// <summary>
     /// Called when the Play button is clicked.
-    /// Saves the selected difficulty and loads the game scene.
+    /// Saves the selected difficulty and loads the game scene with fade transition.
     /// </summary>
     public void OnPlayButton()
     {
@@ -145,8 +145,16 @@ public class MenuManager : MonoBehaviour
         PlayerPrefs.SetString("GameDifficulty", currentDifficulty.ToString());
         PlayerPrefs.Save();
 
-        // Load the game scene
-        SceneManager.LoadScene(gameSceneName);
+        // Fade out and load the game scene
+        if (SceneFadeManager.Instance != null)
+        {
+            SceneFadeManager.Instance.FadeOutAndLoadScene(gameSceneName);
+        }
+        else
+        {
+            // Fallback if no fade manager exists
+            SceneManager.LoadScene(gameSceneName);
+        }
     }
 
     /// <summary>

@@ -1350,20 +1350,38 @@ public class GameManager : MonoBehaviour
 
     /// <summary>
     /// Called when the Home button is pressed.
-    /// Returns to the main menu scene.
+    /// Returns to the main menu scene with fade transition.
     /// </summary>
     public void OnHomeButtonPressed()
     {
-        SceneManager.LoadScene(menuSceneName);
+        // Fade out and load the menu scene
+        if (SceneFadeManager.Instance != null)
+        {
+            SceneFadeManager.Instance.FadeOutAndLoadScene(menuSceneName);
+        }
+        else
+        {
+            // Fallback if no fade manager exists
+            SceneManager.LoadScene(menuSceneName);
+        }
     }
 
     /// <summary>
     /// Called when the Play Again button is pressed.
-    /// Restarts the game with the current difficulty.
+    /// Restarts the game with the current difficulty with fade transition.
     /// </summary>
     public void OnPlayAgainButtonPressed()
     {
-        StartNewGame();
+        // Fade out and reload the current scene
+        if (SceneFadeManager.Instance != null)
+        {
+            SceneFadeManager.Instance.FadeOutAndLoadScene(SceneManager.GetActiveScene().name);
+        }
+        else
+        {
+            // Fallback if no fade manager exists - restart without scene reload
+            StartNewGame();
+        }
     }
 
     #endregion
