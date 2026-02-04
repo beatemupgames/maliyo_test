@@ -667,6 +667,21 @@ public class GameManager : MonoBehaviour
                 }
             }
 
+            // Fade out score texts
+            if (scoreText2D != null)
+            {
+                Color scoreTextColor = scoreText2DOriginalColor;
+                scoreTextColor.a = alpha;
+                scoreText2D.color = scoreTextColor;
+            }
+
+            if (scoreNumberText2D != null)
+            {
+                Color scoreNumberColor = scoreNumberText2DOriginalColor;
+                scoreNumberColor.a = alpha;
+                scoreNumberText2D.color = scoreNumberColor;
+            }
+
             yield return null;
         }
 
@@ -694,6 +709,21 @@ public class GameManager : MonoBehaviour
                     simonTextMeshPros[i].color = color;
                 }
             }
+        }
+
+        // Ensure score texts are fully transparent
+        if (scoreText2D != null)
+        {
+            Color scoreTextColor = scoreText2DOriginalColor;
+            scoreTextColor.a = 0f;
+            scoreText2D.color = scoreTextColor;
+        }
+
+        if (scoreNumberText2D != null)
+        {
+            Color scoreNumberColor = scoreNumberText2DOriginalColor;
+            scoreNumberColor.a = 0f;
+            scoreNumberText2D.color = scoreNumberColor;
         }
     }
 
@@ -730,6 +760,21 @@ public class GameManager : MonoBehaviour
                     }
                 }
             }
+        }
+
+        // Restore score texts alpha
+        if (scoreText2D != null)
+        {
+            Color scoreTextColor = scoreText2DOriginalColor;
+            scoreTextColor.a = 1f;
+            scoreText2D.color = scoreTextColor;
+        }
+
+        if (scoreNumberText2D != null)
+        {
+            Color scoreNumberColor = scoreNumberText2DOriginalColor;
+            scoreNumberColor.a = 1f;
+            scoreNumberText2D.color = scoreNumberColor;
         }
     }
 
