@@ -33,6 +33,9 @@ public class SoundManager : MonoBehaviour
     [Header("Volume Settings")]
     [SerializeField][Range(0f, 1f)] private float masterVolume = 1f;
 
+    [Header("Debug Settings")]
+    [SerializeField] private bool enableDebugLogs = false;
+
     private Dictionary<string, AudioClip> soundDictionary = new Dictionary<string, AudioClip>();
     private List<AudioSource> audioSourcePool = new List<AudioSource>();
     private GameObject audioSourceContainer;
@@ -66,7 +69,10 @@ public class SoundManager : MonoBehaviour
                 }
                 else
                 {
-                    Debug.LogWarning($"Duplicate sound name found: {soundClip.soundName}. Skipping duplicate.");
+                    if (enableDebugLogs)
+                    {
+                        Debug.LogWarning($"Duplicate sound name found: {soundClip.soundName}. Skipping duplicate.");
+                    }
                 }
             }
         }
@@ -81,7 +87,10 @@ public class SoundManager : MonoBehaviour
             CreateAudioSource();
         }
 
-        Debug.Log($"SoundManager initialized with {soundDictionary.Count} sounds and {poolSize} audio sources in pool.");
+        if (enableDebugLogs)
+        {
+            Debug.Log($"SoundManager initialized with {soundDictionary.Count} sounds and {poolSize} audio sources in pool.");
+        }
     }
 
     private AudioSource CreateAudioSource()
@@ -110,7 +119,10 @@ public class SoundManager : MonoBehaviour
         }
 
         // If all are busy, create a temporary one
-        Debug.Log("All audio sources in pool are busy. Creating temporary audio source.");
+        if (enableDebugLogs)
+        {
+            Debug.Log("All audio sources in pool are busy. Creating temporary audio source.");
+        }
         return CreateAudioSource();
     }
 
@@ -123,20 +135,29 @@ public class SoundManager : MonoBehaviour
     {
         if (string.IsNullOrEmpty(soundName))
         {
-            Debug.LogWarning("Sound name is null or empty.");
+            if (enableDebugLogs)
+            {
+                Debug.LogWarning("Sound name is null or empty.");
+            }
             return;
         }
 
         if (!soundDictionary.ContainsKey(soundName))
         {
-            Debug.LogWarning($"Sound '{soundName}' not found in SoundManager.");
+            if (enableDebugLogs)
+            {
+                Debug.LogWarning($"Sound '{soundName}' not found in SoundManager.");
+            }
             return;
         }
 
         AudioClip clip = soundDictionary[soundName];
         if (clip == null)
         {
-            Debug.LogWarning($"AudioClip for sound '{soundName}' is null.");
+            if (enableDebugLogs)
+            {
+                Debug.LogWarning($"AudioClip for sound '{soundName}' is null.");
+            }
             return;
         }
 
