@@ -25,6 +25,8 @@ public class PanelScoreManager : MonoBehaviour
     [SerializeField] private Sprite hardDifficultySprite;
     [SerializeField] private float triangleRotationDuration = 0.5f;
     [SerializeField] private float triangleFadeDuration = 0.3f;
+    [SerializeField] private float scoreWaitDuration = 1.0f;
+    [SerializeField] private float scoreFadeInDuration = 0.3f;
 
     [Header("Audio")]
     [SerializeField] private AudioSource audioSource;
@@ -34,6 +36,9 @@ public class PanelScoreManager : MonoBehaviour
     private Coroutine triangle1RotationCoroutine;
     private Coroutine triangle2RotationCoroutine;
     private GameManager gameManager;
+
+    public float ScoreWaitDuration => scoreWaitDuration;
+    public float ScoreFadeInDuration => scoreFadeInDuration;
 
     private void Awake()
     {

@@ -159,10 +159,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float scoreGameOverTransitionDuration = 0.2f;
     [SerializeField] private float scoreGameOverHoldDuration = 0.6f;
 
-    [Header("Score Screen Transition")]
-    [SerializeField] private float scoreWaitDuration = 1.0f;
-    [SerializeField] private float scoreFadeInDuration = 0.3f;
-
     [Header("Game State")]
     [SerializeField] private GameState currentState = GameState.Idle;
     [SerializeField] private List<SequenceStep> sequence = new List<SequenceStep>();
@@ -584,10 +580,10 @@ public class GameManager : MonoBehaviour
             panelGameOverManager.HidePanel();
         }
 
-        yield return new WaitForSeconds(scoreWaitDuration);
-
         if (panelScoreManager != null)
         {
+            yield return new WaitForSeconds(panelScoreManager.ScoreWaitDuration);
+
             // Activate panel first
             panelScoreManager.ShowPanel();
 
@@ -599,9 +595,9 @@ public class GameManager : MonoBehaviour
             panelScoreManager.PlayPanelScoreSound();
             panelScoreManager.ActivateTriangles();
 
-            StartCoroutine(FadeOutGameElementsCoroutine(scoreFadeInDuration));
+            StartCoroutine(FadeOutGameElementsCoroutine(panelScoreManager.ScoreFadeInDuration));
             panelScoreManager.StartTriangleAnimations();
-            yield return StartCoroutine(panelScoreManager.FadeInPanelCoroutine(scoreFadeInDuration));
+            yield return StartCoroutine(panelScoreManager.FadeInPanelCoroutine(panelScoreManager.ScoreFadeInDuration));
         }
     }
 
