@@ -3,6 +3,24 @@ using UnityEngine.UI;
 
 public class DifficultyIconAnimator : MonoBehaviour
 {
+    [Header("Mouth Animation")]
+    [SerializeField] private float mouthRotationAngle = 20f;
+
+    [Header("Cheekbones Animation")]
+    [SerializeField] private float cheekbonesYOffset = -17f;
+
+    [Header("Eyes Animation")]
+    [SerializeField] private Vector2 eyesEasyOffset = new Vector2(11f, 4f);
+
+    [Header("Eyebrows Animation")]
+    [SerializeField] private float eyebrowLeftEasyRotation = 20f;
+    [SerializeField] private float eyebrowLeftMediumRotation = -5f;
+    [SerializeField] private float eyebrowLeftHardRotation = -10f;
+
+    [Header("Horns Animation")]
+    [SerializeField] private float hornLeftEasyMediumRotation = 30f;
+    [SerializeField] private float hornLeftHardRotation = 0f;
+
     [Header("Icon Components")]
     [SerializeField] private Image difficultyIcon;
     [SerializeField] private RectTransform mouth;
@@ -15,16 +33,6 @@ public class DifficultyIconAnimator : MonoBehaviour
 
     [Header("Dependencies")]
     [SerializeField] private DifficultyColorProvider colorProvider;
-
-    [Header("Animation Settings")]
-    [SerializeField] private float mouthRotationAngle = 20f;
-    [SerializeField] private float cheekbonesYOffset = -17f;
-    [SerializeField] private Vector2 eyesEasyOffset = new Vector2(11f, 4f);
-    [SerializeField] private float eyebrowLeftEasyRotation = 20f;
-    [SerializeField] private float eyebrowLeftMediumRotation = -5f;
-    [SerializeField] private float eyebrowLeftHardRotation = -10f;
-    [SerializeField] private float hornLeftEasyMediumRotation = 30f;
-    [SerializeField] private float hornLeftHardRotation = 0f;
 
     private RectTransform cheekbonesRect;
     private Vector2 cheekbonesOriginalPosition;
