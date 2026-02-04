@@ -122,24 +122,10 @@ public class GameManager : MonoBehaviour
         public DifficultyScores hardScores = new DifficultyScores();
     }
 
-    [Header("Button References")]
-    [SerializeField] private SimonButton[] easyButtons = new SimonButton[3];
-    [SerializeField] private SimonButton[] normalButtons = new SimonButton[4];
-
-    [Header("UI References")]
-    [SerializeField] private TextMeshPro scoreNumberText2D;
-    [SerializeField] private TextMeshPro scoreText2D;
-    [SerializeField] private GameHUDManager gameHUDManager;
-    [SerializeField] private PanelGameOverManager panelGameOverManager;
-    [SerializeField] private PanelScoreManager panelScoreManager;
-
-    [Header("Game Elements to Fade")]
-    [SerializeField] private GameObject simonEasyGameObject;
-    [SerializeField] private GameObject simonNormalGameObject;
-
     [Header("General Settings")]
     [SerializeField] private Difficulty difficulty = Difficulty.Medium;
     [SerializeField] private string menuSceneName = "Menu";
+    [SerializeField] private bool enableDebugLogs = false;
 
     [Header("Sequence & Button Timing")]
     [SerializeField] private float timeBetweenButtons = 0.6f;
@@ -159,15 +145,27 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float scoreGameOverTransitionDuration = 0.2f;
     [SerializeField] private float scoreGameOverHoldDuration = 0.6f;
 
-    [Header("Debug")]
-    [SerializeField] private bool enableDebugLogs = false;
-
     [Header("Game State")]
     [SerializeField] private GameState currentState = GameState.Idle;
     [SerializeField] private List<SequenceStep> sequence = new List<SequenceStep>();
     [SerializeField] private int currentPlayerStep = 0;
     [SerializeField] private int currentRound = 0;
     [SerializeField] private int playerScore = 0;
+
+    [Header("Button References")]
+    [SerializeField] private SimonButton[] easyButtons = new SimonButton[3];
+    [SerializeField] private SimonButton[] normalButtons = new SimonButton[4];
+
+    [Header("UI References")]
+    [SerializeField] private TextMeshPro scoreNumberText2D;
+    [SerializeField] private TextMeshPro scoreText2D;
+    [SerializeField] private GameHUDManager gameHUDManager;
+    [SerializeField] private PanelGameOverManager panelGameOverManager;
+    [SerializeField] private PanelScoreManager panelScoreManager;
+
+    [Header("Game Elements")]
+    [SerializeField] private GameObject simonEasyGameObject;
+    [SerializeField] private GameObject simonNormalGameObject;
 
     private HashSet<ButtonColor> currentStepPressedButtons = new HashSet<ButtonColor>();
     private HighScoreData highScoreData = new HighScoreData();
