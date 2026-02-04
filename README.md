@@ -4,7 +4,16 @@ A technical test project for the Unity Developer position at Maliyo Games.
 
 ## 📋 Overview
 
-A modern implementation of the classic "Simon Says" memory game built in Unity, featuring three difficulty modes, persistent high score tracking, and polished UI/UX.
+A faithful replica of the "Sound Memory" game from Maliyo Games' "Offline Games" collection. This implementation recreates the classic "Simon Says" memory game experience in Unity, featuring three difficulty modes, persistent high score tracking, and polished UI/UX.
+
+## 📸 Screenshots
+
+<p align="center">
+  <img src="Screenshots/menu.png" width="23%" alt="Main Menu" />
+  <img src="Screenshots/gameplay.png" width="23%" alt="Gameplay" />
+  <img src="Screenshots/gameover.png" width="23%" alt="Game Over" />
+  <img src="Screenshots/ranking.png" width="23%" alt="Score Ranking" />
+</p>
 
 ## ✨ Features
 
