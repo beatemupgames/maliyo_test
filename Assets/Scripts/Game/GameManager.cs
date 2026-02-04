@@ -159,6 +159,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float scoreGameOverTransitionDuration = 0.2f;
     [SerializeField] private float scoreGameOverHoldDuration = 0.6f;
 
+    [Header("Debug")]
+    [SerializeField] private bool enableDebugLogs = false;
+
     [Header("Game State")]
     [SerializeField] private GameState currentState = GameState.Idle;
     [SerializeField] private List<SequenceStep> sequence = new List<SequenceStep>();
@@ -472,7 +475,10 @@ public class GameManager : MonoBehaviour
         SetButtonsInteractable(false);
         SaveHighScore();
         StartCoroutine(GameOverSequenceCoroutine());
-        Debug.Log($"Game Over! Final Score: {playerScore}, Rounds Completed: {currentRound - 1}");
+        if (enableDebugLogs)
+        {
+            Debug.Log($"Game Over! Final Score: {playerScore}, Rounds Completed: {currentRound - 1}");
+        }
     }
 
     private IEnumerator GameOverSequenceCoroutine()
@@ -919,7 +925,10 @@ public class GameManager : MonoBehaviour
         {
             difficultyScores.AddScore(playerScore);
             SaveHighScoresToDisk();
-            Debug.Log($"Score saved for {difficulty}: {playerScore}");
+            if (enableDebugLogs)
+            {
+                Debug.Log($"Score saved for {difficulty}: {playerScore}");
+            }
         }
     }
 
@@ -929,11 +938,17 @@ public class GameManager : MonoBehaviour
         {
             string json = JsonUtility.ToJson(highScoreData, true);
             File.WriteAllText(saveFilePath, json);
-            Debug.Log($"High scores saved to: {saveFilePath}");
+            if (enableDebugLogs)
+            {
+                Debug.Log($"High scores saved to: {saveFilePath}");
+            }
         }
         catch (System.Exception e)
         {
-            Debug.LogError($"Failed to save high scores: {e.Message}");
+            if (enableDebugLogs)
+            {
+                Debug.LogError($"Failed to save high scores: {e.Message}");
+            }
         }
     }
 
@@ -945,17 +960,26 @@ public class GameManager : MonoBehaviour
             {
                 string json = File.ReadAllText(saveFilePath);
                 highScoreData = JsonUtility.FromJson<HighScoreData>(json);
-                Debug.Log($"High scores loaded from: {saveFilePath}");
+                if (enableDebugLogs)
+                {
+                    Debug.Log($"High scores loaded from: {saveFilePath}");
+                }
             }
             else
             {
-                Debug.Log("No save file found, starting with default high scores.");
+                if (enableDebugLogs)
+                {
+                    Debug.Log("No save file found, starting with default high scores.");
+                }
                 highScoreData = new HighScoreData();
             }
         }
         catch (System.Exception e)
         {
-            Debug.LogError($"Failed to load high scores: {e.Message}");
+            if (enableDebugLogs)
+            {
+                Debug.LogError($"Failed to load high scores: {e.Message}");
+            }
             highScoreData = new HighScoreData();
         }
     }
