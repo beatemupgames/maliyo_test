@@ -135,14 +135,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI modeText;
     [SerializeField] private UnityEngine.UI.Image difficultyIcon;
     [SerializeField] private GameObject panelGameOver;
-    [SerializeField] private GameObject panelScore;
-    [SerializeField] private GameObject triangle1;
-    [SerializeField] private GameObject triangle2;
-    [SerializeField] private TextMeshProUGUI panelScoreCurrentScoreText;
-    [SerializeField] private TextMeshProUGUI panelScoreBestTodayText;
-    [SerializeField] private TextMeshProUGUI panelScoreBestWeekText;
-    [SerializeField] private TextMeshProUGUI panelScoreBestAllTimeText;
-    [SerializeField] private TextMeshProUGUI panelScoreDifficultyText;
+    [SerializeField] private PanelScoreManager panelScoreManager;
 
     [Header("Game Elements to Fade")]
     [SerializeField] private GameObject simonEasyGameObject;
@@ -151,7 +144,6 @@ public class GameManager : MonoBehaviour
     [Header("Audio")]
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip gameOverSound;
-    [SerializeField] private AudioClip panelScoreSound;
     [SerializeField] private AudioClip clickSound;
 
     [Header("Game Settings")]
@@ -173,8 +165,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float scoreAnimationDuration = 0.3f;
     [SerializeField] private float scoreScaleMultiplier = 1.3f;
     [SerializeField] private Color scoreHighlightColor = Color.yellow;
-    [SerializeField] private float triangleRotationDuration = 0.5f;
-    [SerializeField] private float triangleFadeDuration = 0.3f;
     [SerializeField] private float hardModeRotationSpeed = 30f;
 
     [Header("Game State")]
@@ -190,8 +180,6 @@ public class GameManager : MonoBehaviour
     private Color scoreNumberText2DOriginalColor;
     private Vector3 scoreNumberText2DOriginalScale;
     private Color scoreText2DOriginalColor;
-    private Coroutine triangle1RotationCoroutine;
-    private Coroutine triangle2RotationCoroutine;
 
     public GameState CurrentState => currentState;
     public int CurrentRound => currentRound;
@@ -255,31 +243,9 @@ public class GameManager : MonoBehaviour
             panelGameOver.SetActive(false);
         }
 
-        if (panelScore != null)
+        if (panelScoreManager != null)
         {
-            panelScore.SetActive(false);
-        }
-
-        if (triangle1 != null)
-        {
-            CanvasGroup triangleCanvasGroup = triangle1.GetComponent<CanvasGroup>();
-            if (triangleCanvasGroup == null)
-            {
-                triangleCanvasGroup = triangle1.AddComponent<CanvasGroup>();
-            }
-            triangleCanvasGroup.alpha = 0f;
-            triangle1.SetActive(false);
-        }
-
-        if (triangle2 != null)
-        {
-            CanvasGroup triangleCanvasGroup = triangle2.GetComponent<CanvasGroup>();
-            if (triangleCanvasGroup == null)
-            {
-                triangleCanvasGroup = triangle2.AddComponent<CanvasGroup>();
-            }
-            triangleCanvasGroup.alpha = 0f;
-            triangle2.SetActive(false);
+            panelScoreManager.gameObject.SetActive(false);
         }
 
         StartNewGame();
@@ -298,43 +264,10 @@ public class GameManager : MonoBehaviour
             panelGameOver.SetActive(false);
         }
 
-        if (panelScore != null)
+        if (panelScoreManager != null)
         {
-            panelScore.SetActive(false);
-        }
-
-        if (triangle1RotationCoroutine != null)
-        {
-            StopCoroutine(triangle1RotationCoroutine);
-            triangle1RotationCoroutine = null;
-        }
-
-        if (triangle2RotationCoroutine != null)
-        {
-            StopCoroutine(triangle2RotationCoroutine);
-            triangle2RotationCoroutine = null;
-        }
-
-        if (triangle1 != null)
-        {
-            CanvasGroup canvasGroup = triangle1.GetComponent<CanvasGroup>();
-            if (canvasGroup != null)
-            {
-                canvasGroup.alpha = 0f;
-            }
-            triangle1.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
-            triangle1.SetActive(false);
-        }
-
-        if (triangle2 != null)
-        {
-            CanvasGroup canvasGroup = triangle2.GetComponent<CanvasGroup>();
-            if (canvasGroup != null)
-            {
-                canvasGroup.alpha = 0f;
-            }
-            triangle2.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
-            triangle2.SetActive(false);
+            panelScoreManager.ResetPanel();
+            panelScoreManager.gameObject.SetActive(false);
         }
 
         // Activate/deactivate Simon GameObjects based on difficulty
@@ -655,31 +588,22 @@ public class GameManager : MonoBehaviour
 
         yield return new WaitForSeconds(scoreWaitDuration);
 
-        if (panelScore != null)
+        if (panelScoreManager != null)
         {
-            UpdatePanelScoreUI();
-            panelScore.SetActive(true);
+            // Activate panel first
+            panelScoreManager.ShowPanel();
 
-            if (audioSource != null && panelScoreSound != null)
-            {
-                audioSource.PlayOneShot(panelScoreSound);
-            }
+            int bestToday = Mathf.Max(GetBestScoreToday(), playerScore);
+            int bestWeek = Mathf.Max(GetBestScoreThisWeek(), playerScore);
+            int bestAllTime = Mathf.Max(GetBestScoreAllTime(), playerScore);
 
-            // Activate triangles
-            if (triangle1 != null)
-            {
-                triangle1.SetActive(true);
-            }
-
-            if (triangle2 != null)
-            {
-                triangle2.SetActive(true);
-            }
+            panelScoreManager.UpdatePanelScoreUI(playerScore, bestToday, bestWeek, bestAllTime, difficulty);
+            panelScoreManager.PlayPanelScoreSound();
+            panelScoreManager.ActivateTriangles();
 
             StartCoroutine(FadeOutGameElementsCoroutine(scoreFadeInDuration));
-            triangle1RotationCoroutine = StartCoroutine(Triangle1AnimationCoroutine());
-            triangle2RotationCoroutine = StartCoroutine(Triangle2AnimationCoroutine());
-            yield return StartCoroutine(FadeInPanelCoroutine(panelScore, scoreFadeInDuration));
+            panelScoreManager.StartTriangleAnimations();
+            yield return StartCoroutine(panelScoreManager.FadeInPanelCoroutine(scoreFadeInDuration));
         }
     }
 
@@ -858,166 +782,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private IEnumerator Triangle1AnimationCoroutine()
-    {
-        if (triangle1 == null) yield break;
-
-        // Get or add CanvasGroup
-        CanvasGroup canvasGroup = triangle1.GetComponent<CanvasGroup>();
-        if (canvasGroup == null)
-        {
-            canvasGroup = triangle1.AddComponent<CanvasGroup>();
-        }
-
-        // Get RectTransform for rotation
-        RectTransform rectTransform = triangle1.GetComponent<RectTransform>();
-        if (rectTransform == null) yield break;
-
-        // Set pivot to top center (0.5, 1)
-        rectTransform.pivot = new Vector2(0.5f, 1f);
-
-        // Start at center (0 degrees)
-        rectTransform.localRotation = Quaternion.Euler(0f, 0f, 0f);
-
-        // Fade in
-        float elapsedTime = 0f;
-        canvasGroup.alpha = 0f;
-
-        while (elapsedTime < triangleFadeDuration)
-        {
-            elapsedTime += Time.deltaTime;
-            canvasGroup.alpha = Mathf.Lerp(0f, 1f, elapsedTime / triangleFadeDuration);
-            yield return null;
-        }
-
-        canvasGroup.alpha = 1f;
-
-        // Pendulum rotation loop: 0 to -45 (left) back to 0, repeat
-        while (true)
-        {
-            // Move 45 degrees to the left
-            elapsedTime = 0f;
-            float startAngle = 0f;
-            float targetAngle = -45f;
-
-            while (elapsedTime < triangleRotationDuration)
-            {
-                elapsedTime += Time.deltaTime;
-                float t = elapsedTime / triangleRotationDuration;
-
-                // Use smoothstep for more natural pendulum motion
-                float smoothT = t * t * (3f - 2f * t);
-                float currentAngle = Mathf.Lerp(startAngle, targetAngle, smoothT);
-
-                rectTransform.localRotation = Quaternion.Euler(0f, 0f, currentAngle);
-                yield return null;
-            }
-
-            rectTransform.localRotation = Quaternion.Euler(0f, 0f, -45f);
-
-            // Move 45 degrees to the right (back to initial position)
-            elapsedTime = 0f;
-            startAngle = -45f;
-            targetAngle = 0f;
-
-            while (elapsedTime < triangleRotationDuration)
-            {
-                elapsedTime += Time.deltaTime;
-                float t = elapsedTime / triangleRotationDuration;
-
-                // Use smoothstep for more natural pendulum motion
-                float smoothT = t * t * (3f - 2f * t);
-                float currentAngle = Mathf.Lerp(startAngle, targetAngle, smoothT);
-
-                rectTransform.localRotation = Quaternion.Euler(0f, 0f, currentAngle);
-                yield return null;
-            }
-
-            rectTransform.localRotation = Quaternion.Euler(0f, 0f, 0f);
-        }
-    }
-
-    private IEnumerator Triangle2AnimationCoroutine()
-    {
-        if (triangle2 == null) yield break;
-
-        // Get or add CanvasGroup
-        CanvasGroup canvasGroup = triangle2.GetComponent<CanvasGroup>();
-        if (canvasGroup == null)
-        {
-            canvasGroup = triangle2.AddComponent<CanvasGroup>();
-        }
-
-        // Get RectTransform for rotation
-        RectTransform rectTransform = triangle2.GetComponent<RectTransform>();
-        if (rectTransform == null) yield break;
-
-        // Set pivot to top center (0.5, 1)
-        rectTransform.pivot = new Vector2(0.5f, 1f);
-
-        // Start at center (0 degrees)
-        rectTransform.localRotation = Quaternion.Euler(0f, 0f, 0f);
-
-        // Fade in
-        float elapsedTime = 0f;
-        canvasGroup.alpha = 0f;
-
-        while (elapsedTime < triangleFadeDuration)
-        {
-            elapsedTime += Time.deltaTime;
-            canvasGroup.alpha = Mathf.Lerp(0f, 1f, elapsedTime / triangleFadeDuration);
-            yield return null;
-        }
-
-        canvasGroup.alpha = 1f;
-
-        // Wait for 0.5 second delay
-        yield return new WaitForSeconds(0.5f);
-
-        // Pendulum rotation loop: 0 to +45 (right) back to 0, repeat (inverse of triangle1)
-        while (true)
-        {
-            // Move 45 degrees to the right
-            elapsedTime = 0f;
-            float startAngle = 0f;
-            float targetAngle = 45f;
-
-            while (elapsedTime < triangleRotationDuration)
-            {
-                elapsedTime += Time.deltaTime;
-                float t = elapsedTime / triangleRotationDuration;
-
-                // Use smoothstep for more natural pendulum motion
-                float smoothT = t * t * (3f - 2f * t);
-                float currentAngle = Mathf.Lerp(startAngle, targetAngle, smoothT);
-
-                rectTransform.localRotation = Quaternion.Euler(0f, 0f, currentAngle);
-                yield return null;
-            }
-
-            rectTransform.localRotation = Quaternion.Euler(0f, 0f, 45f);
-
-            // Move 45 degrees to the left (back to initial position)
-            elapsedTime = 0f;
-            startAngle = 45f;
-            targetAngle = 0f;
-
-            while (elapsedTime < triangleRotationDuration)
-            {
-                elapsedTime += Time.deltaTime;
-                float t = elapsedTime / triangleRotationDuration;
-
-                // Use smoothstep for more natural pendulum motion
-                float smoothT = t * t * (3f - 2f * t);
-                float currentAngle = Mathf.Lerp(startAngle, targetAngle, smoothT);
-
-                rectTransform.localRotation = Quaternion.Euler(0f, 0f, currentAngle);
-                yield return null;
-            }
-
-            rectTransform.localRotation = Quaternion.Euler(0f, 0f, 0f);
-        }
-    }
 
     private void UpdateScoreUI(bool animate = true)
     {
@@ -1290,51 +1054,6 @@ public class GameManager : MonoBehaviour
         return highScoreData;
     }
 
-    private void UpdatePanelScoreUI()
-    {
-        if (panelScoreCurrentScoreText != null)
-        {
-            panelScoreCurrentScoreText.text = playerScore.ToString();
-        }
-
-        if (panelScoreBestTodayText != null)
-        {
-            int bestToday = Mathf.Max(GetBestScoreToday(), playerScore);
-            panelScoreBestTodayText.text = bestToday.ToString();
-        }
-
-        if (panelScoreBestWeekText != null)
-        {
-            int bestWeek = Mathf.Max(GetBestScoreThisWeek(), playerScore);
-            panelScoreBestWeekText.text = bestWeek.ToString();
-        }
-
-        if (panelScoreBestAllTimeText != null)
-        {
-            int bestAllTime = Mathf.Max(GetBestScoreAllTime(), playerScore);
-            panelScoreBestAllTimeText.text = bestAllTime.ToString();
-        }
-
-        if (panelScoreDifficultyText != null)
-        {
-            panelScoreDifficultyText.text = difficulty.ToString().ToUpper();
-
-            Color difficultyColor = mediumDifficultyColor;
-            switch (difficulty)
-            {
-                case Difficulty.Easy:
-                    difficultyColor = easyDifficultyColor;
-                    break;
-                case Difficulty.Medium:
-                    difficultyColor = mediumDifficultyColor;
-                    break;
-                case Difficulty.Hard:
-                    difficultyColor = hardDifficultyColor;
-                    break;
-            }
-            panelScoreDifficultyText.color = difficultyColor;
-        }
-    }
 
     public void OnHomeButton()
     {
