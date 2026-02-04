@@ -175,6 +175,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Color scoreHighlightColor = Color.yellow;
     [SerializeField] private float triangleRotationDuration = 0.5f;
     [SerializeField] private float triangleFadeDuration = 0.3f;
+    [SerializeField] private float hardModeRotationSpeed = 30f;
 
     [Header("Game State")]
     [SerializeField] private GameState currentState = GameState.Idle;
@@ -198,6 +199,15 @@ public class GameManager : MonoBehaviour
 
     private SimonButton[] CurrentButtons => difficulty == Difficulty.Easy ? easyButtons : normalButtons;
     private GameObject CurrentSimonGameObject => difficulty == Difficulty.Easy ? simonEasyGameObject : simonNormalGameObject;
+
+    private void Update()
+    {
+        // Rotate Simon GameObject in Hard mode
+        if (difficulty == Difficulty.Hard && simonNormalGameObject != null && currentState != GameState.GameOver)
+        {
+            simonNormalGameObject.transform.Rotate(0f, 0f, hardModeRotationSpeed * Time.deltaTime);
+        }
+    }
 
     private void Start()
     {
@@ -231,11 +241,13 @@ public class GameManager : MonoBehaviour
         if (simonEasyGameObject != null)
         {
             simonEasyGameObject.SetActive(difficulty == Difficulty.Easy);
+            simonEasyGameObject.transform.rotation = Quaternion.identity;
         }
 
         if (simonNormalGameObject != null)
         {
             simonNormalGameObject.SetActive(difficulty != Difficulty.Easy);
+            simonNormalGameObject.transform.rotation = Quaternion.identity;
         }
 
         if (panelGameOver != null)
@@ -329,11 +341,13 @@ public class GameManager : MonoBehaviour
         if (simonEasyGameObject != null)
         {
             simonEasyGameObject.SetActive(difficulty == Difficulty.Easy);
+            simonEasyGameObject.transform.rotation = Quaternion.identity;
         }
 
         if (simonNormalGameObject != null)
         {
             simonNormalGameObject.SetActive(difficulty != Difficulty.Easy);
+            simonNormalGameObject.transform.rotation = Quaternion.identity;
         }
 
         RestoreGameElementsAlpha();
