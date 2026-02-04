@@ -129,9 +129,7 @@ public class GameManager : MonoBehaviour
     [Header("UI References")]
     [SerializeField] private TextMeshPro scoreNumberText2D;
     [SerializeField] private TextMeshPro scoreText2D;
-    [SerializeField] private TextMeshProUGUI scoreTextUI;
-    [SerializeField] private TextMeshProUGUI highScoreTextUI;
-    [SerializeField] private TextMeshProUGUI modeText;
+    [SerializeField] private GameHUDManager gameHUDManager;
     [SerializeField] private PanelGameOverManager panelGameOverManager;
     [SerializeField] private PanelScoreManager panelScoreManager;
 
@@ -207,8 +205,11 @@ public class GameManager : MonoBehaviour
 
         saveFilePath = Path.Combine(Application.persistentDataPath, "highscores.json");
         LoadHighScores();
-        UpdateHighScoreUI();
-        UpdateModeText();
+
+        if (gameHUDManager != null)
+        {
+            gameHUDManager.Initialize(difficulty, GetBestScoreAllTime());
+        }
 
         if (panelScoreManager != null)
         {
@@ -737,12 +738,11 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        if (scoreTextUI != null)
+        if (gameHUDManager != null)
         {
-            scoreTextUI.text = scoreString;
+            int bestScore = Mathf.Max(GetBestScoreAllTime(), playerScore);
+            gameHUDManager.UpdateScores(playerScore, bestScore);
         }
-
-        UpdateHighScoreUI();
     }
 
     private IEnumerator AnimateScoreTextCoroutine()
@@ -857,30 +857,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void UpdateHighScoreUI()
-    {
-        if (highScoreTextUI != null)
-        {
-            int savedHighScore = GetBestScoreAllTime();
-            int displayScore = Mathf.Max(savedHighScore, playerScore);
-            highScoreTextUI.text = displayScore.ToString();
-        }
-    }
-
-    private void UpdateModeText()
-    {
-        if (modeText != null)
-        {
-            string modeTextString = difficulty switch
-            {
-                Difficulty.Easy => "EASY MODE",
-                Difficulty.Medium => "MEDIUM MODE",
-                Difficulty.Hard => "HARD MODE",
-                _ => "MEDIUM MODE"
-            };
-            modeText.text = modeTextString;
-        }
-    }
 
 
     private void SaveHighScore()
