@@ -7,11 +7,6 @@ public class PanelGameOverManager : MonoBehaviour
     [SerializeField] private float fadeDuration = 0.3f;
     [SerializeField] private float fadeOutDuration = 0.15f;
 
-    [Header("Audio")]
-    [SerializeField] private AudioSource audioSource;
-    [SerializeField] private AudioClip gameOverSound;
-    [SerializeField] private AudioClip clickSound;
-
     private GameManager gameManager;
 
     private void Awake()
@@ -22,17 +17,17 @@ public class PanelGameOverManager : MonoBehaviour
 
     public void PlayGameOverSound()
     {
-        if (audioSource != null && gameOverSound != null)
+        if (SoundManager.Instance != null)
         {
-            audioSource.PlayOneShot(gameOverSound);
+            SoundManager.Instance.PlaySound("GameOver");
         }
     }
 
     public void PlayClickSound()
     {
-        if (audioSource != null && clickSound != null)
+        if (SoundManager.Instance != null)
         {
-            audioSource.PlayOneShot(clickSound);
+            SoundManager.Instance.PlaySound("Click");
         }
     }
 

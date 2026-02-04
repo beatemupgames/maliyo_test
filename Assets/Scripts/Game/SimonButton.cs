@@ -10,8 +10,6 @@ public class SimonButton : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private SpriteRenderer spriteRenderer;
-    [SerializeField] private AudioSource audioSource;
-    [SerializeField] private AudioClip buttonSound;
 
     private Vector3 originalScale;
     private Color originalColor;
@@ -56,9 +54,11 @@ public class SimonButton : MonoBehaviour
 
         transform.localScale = originalScale * activeScale;
 
-        if (audioSource != null && buttonSound != null)
+        // Play sound based on button color
+        if (SoundManager.Instance != null)
         {
-            audioSource.PlayOneShot(buttonSound);
+            string soundName = $"{buttonColor}Button";
+            SoundManager.Instance.PlaySound(soundName);
         }
     }
 

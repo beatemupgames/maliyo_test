@@ -28,11 +28,6 @@ public class PanelScoreManager : MonoBehaviour
     [SerializeField] private float scoreWaitDuration = 1.0f;
     [SerializeField] private float scoreFadeInDuration = 0.3f;
 
-    [Header("Audio")]
-    [SerializeField] private AudioSource audioSource;
-    [SerializeField] private AudioClip panelScoreSound;
-    [SerializeField] private AudioClip clickSound;
-
     private Coroutine triangle1RotationCoroutine;
     private Coroutine triangle2RotationCoroutine;
     private GameManager gameManager;
@@ -184,17 +179,17 @@ public class PanelScoreManager : MonoBehaviour
 
     public void PlayPanelScoreSound()
     {
-        if (audioSource != null && panelScoreSound != null)
+        if (SoundManager.Instance != null)
         {
-            audioSource.PlayOneShot(panelScoreSound);
+            SoundManager.Instance.PlaySound("PanelScore");
         }
     }
 
     public void PlayClickSound()
     {
-        if (audioSource != null && clickSound != null)
+        if (SoundManager.Instance != null)
         {
-            audioSource.PlayOneShot(clickSound);
+            SoundManager.Instance.PlaySound("Click");
         }
     }
 

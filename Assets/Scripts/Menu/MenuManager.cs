@@ -23,10 +23,6 @@ public class MenuManager : MonoBehaviour
     [Header("UI Components")]
     [SerializeField] private Button playButton;
 
-    [Header("Audio")]
-    [SerializeField] private AudioSource audioSource;
-    [SerializeField] private AudioClip clickSound;
-
     private Difficulty currentDifficulty = Difficulty.Easy;
 
     private void Start()
@@ -153,9 +149,9 @@ public class MenuManager : MonoBehaviour
 
     private void PlayClickSound()
     {
-        if (audioSource != null && clickSound != null)
+        if (SoundManager.Instance != null)
         {
-            audioSource.PlayOneShot(clickSound);
+            SoundManager.Instance.PlaySound("Click");
         }
     }
 }
