@@ -12,11 +12,17 @@ public class PanelScoreManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI panelScoreBestWeekText;
     [SerializeField] private TextMeshProUGUI panelScoreBestAllTimeText;
     [SerializeField] private TextMeshProUGUI panelScoreDifficultyText;
+    [SerializeField] private UnityEngine.UI.Image panelScoreDifficultyIcon;
+    [SerializeField] private TextMeshProUGUI textMode;
+    [SerializeField] private UnityEngine.UI.Image difficultyIcon;
 
     [Header("Panel Score Settings")]
     [SerializeField] private Color easyDifficultyColor = new Color(0.184f, 0.718f, 0.255f); // #2FB741
     [SerializeField] private Color mediumDifficultyColor = new Color(0.992f, 0.655f, 0.016f); // #FDA704
     [SerializeField] private Color hardDifficultyColor = new Color(0.996f, 0.373f, 0.337f); // #FE5F56
+    [SerializeField] private Sprite easyDifficultySprite;
+    [SerializeField] private Sprite mediumDifficultySprite;
+    [SerializeField] private Sprite hardDifficultySprite;
     [SerializeField] private float triangleRotationDuration = 0.5f;
     [SerializeField] private float triangleFadeDuration = 0.3f;
 
@@ -103,24 +109,66 @@ public class PanelScoreManager : MonoBehaviour
 
     private void UpdateDifficultyText(GameManager.Difficulty difficulty)
     {
+        Color difficultyColor = mediumDifficultyColor;
+        Sprite difficultySprite = mediumDifficultySprite;
+
+        switch (difficulty)
+        {
+            case GameManager.Difficulty.Easy:
+                difficultyColor = easyDifficultyColor;
+                difficultySprite = easyDifficultySprite;
+                break;
+            case GameManager.Difficulty.Medium:
+                difficultyColor = mediumDifficultyColor;
+                difficultySprite = mediumDifficultySprite;
+                break;
+            case GameManager.Difficulty.Hard:
+                difficultyColor = hardDifficultyColor;
+                difficultySprite = hardDifficultySprite;
+                break;
+        }
+
         if (panelScoreDifficultyText != null)
         {
             panelScoreDifficultyText.text = difficulty.ToString().ToUpper();
-
-            Color difficultyColor = mediumDifficultyColor;
-            switch (difficulty)
-            {
-                case GameManager.Difficulty.Easy:
-                    difficultyColor = easyDifficultyColor;
-                    break;
-                case GameManager.Difficulty.Medium:
-                    difficultyColor = mediumDifficultyColor;
-                    break;
-                case GameManager.Difficulty.Hard:
-                    difficultyColor = hardDifficultyColor;
-                    break;
-            }
             panelScoreDifficultyText.color = difficultyColor;
+        }
+
+        if (panelScoreDifficultyIcon != null && difficultySprite != null)
+        {
+            panelScoreDifficultyIcon.sprite = difficultySprite;
+        }
+    }
+
+    public void UpdateDifficultyUI(GameManager.Difficulty difficulty)
+    {
+        Color difficultyColor = mediumDifficultyColor;
+        Sprite difficultySprite = mediumDifficultySprite;
+
+        switch (difficulty)
+        {
+            case GameManager.Difficulty.Easy:
+                difficultyColor = easyDifficultyColor;
+                difficultySprite = easyDifficultySprite;
+                break;
+            case GameManager.Difficulty.Medium:
+                difficultyColor = mediumDifficultyColor;
+                difficultySprite = mediumDifficultySprite;
+                break;
+            case GameManager.Difficulty.Hard:
+                difficultyColor = hardDifficultyColor;
+                difficultySprite = hardDifficultySprite;
+                break;
+        }
+
+        if (textMode != null)
+        {
+            textMode.color = difficultyColor;
+        }
+
+        if (difficultyIcon != null && difficultySprite != null)
+        {
+            difficultyIcon.sprite = difficultySprite;
         }
     }
 
