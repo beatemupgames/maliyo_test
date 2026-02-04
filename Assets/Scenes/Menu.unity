@@ -607,6 +607,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4db11a343afe744b6853b69c6ca2e6e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mouthRotationAngle: 20
+  cheekbonesYOffset: -17
+  eyesEasyOffset: {x: 11, y: 4}
+  eyebrowLeftEasyRotation: 30
+  eyebrowLeftMediumRotation: -5
+  eyebrowLeftHardRotation: -10
+  hornLeftEasyMediumRotation: 30
+  hornLeftHardRotation: 0
   difficultyIcon: {fileID: 1795424966}
   mouth: {fileID: 317633496}
   cheekbones: {fileID: 800052665}
@@ -616,14 +624,6 @@ MonoBehaviour:
   hornLeft: {fileID: 92736213}
   hornRight: {fileID: 810786393}
   colorProvider: {fileID: 548035768}
-  mouthRotationAngle: 20
-  cheekbonesYOffset: -17
-  eyesEasyOffset: {x: 11, y: 4}
-  eyebrowLeftEasyRotation: 30
-  eyebrowLeftMediumRotation: -5
-  eyebrowLeftHardRotation: -10
-  hornLeftEasyMediumRotation: 30
-  hornLeftHardRotation: 0
 --- !u!1 &441170751
 GameObject:
   m_ObjectHideFlags: 0
@@ -718,11 +718,11 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 818127506}
-  - {fileID: 1705349469}
+  - {fileID: 346942020}
   - {fileID: 1136517777}
   - {fileID: 1062683322}
-  - {fileID: 346942020}
+  - {fileID: 1705349469}
+  - {fileID: 818127506}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -775,7 +775,7 @@ Transform:
   m_GameObject: {fileID: 548035765}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.6062992, y: 0.1116892, z: -9.933622}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1946,7 +1946,7 @@ Transform:
   m_GameObject: {fileID: 1368433895}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.5566543, y: -1.8843887, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
