@@ -793,9 +793,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b00dbc4fa3184479eb35c78c64575cd2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  easyDifficultyColor: {r: 0.184, g: 0.718, b: 0.255, a: 1}
-  mediumDifficultyColor: {r: 0.992, g: 0.655, b: 0.016, a: 1}
-  hardDifficultyColor: {r: 0.996, g: 0.373, b: 0.337, a: 1}
+  colorsConfig: {fileID: 11400000, guid: 4e462a3f37e804572a79aee0271e4e9a, type: 2}
 --- !u!1 &752477501
 GameObject:
   m_ObjectHideFlags: 0
@@ -1938,6 +1936,7 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: c16d0c424eb204e6abed19b2038d815b, type: 3}
   poolSize: 7
   masterVolume: 1
+  enableDebugLogs: 0
 --- !u!4 &1368433897
 Transform:
   m_ObjectHideFlags: 0

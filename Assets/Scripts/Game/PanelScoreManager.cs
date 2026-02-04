@@ -17,9 +17,7 @@ public class PanelScoreManager : MonoBehaviour
     [SerializeField] private UnityEngine.UI.Image difficultyIcon;
 
     [Header("Panel Score Settings")]
-    [SerializeField] private Color easyDifficultyColor = new Color(0.184f, 0.718f, 0.255f); // #2FB741
-    [SerializeField] private Color mediumDifficultyColor = new Color(0.992f, 0.655f, 0.016f); // #FDA704
-    [SerializeField] private Color hardDifficultyColor = new Color(0.996f, 0.373f, 0.337f); // #FE5F56
+    [SerializeField] private DifficultyColorsConfig colorsConfig;
     [SerializeField] private Sprite easyDifficultySprite;
     [SerializeField] private Sprite mediumDifficultySprite;
     [SerializeField] private Sprite hardDifficultySprite;
@@ -109,21 +107,21 @@ public class PanelScoreManager : MonoBehaviour
 
     private void UpdateDifficultyText(GameManager.Difficulty difficulty)
     {
-        Color difficultyColor = mediumDifficultyColor;
+        Color difficultyColor = colorsConfig != null ? colorsConfig.MediumColor : Color.white;
         Sprite difficultySprite = mediumDifficultySprite;
 
         switch (difficulty)
         {
             case GameManager.Difficulty.Easy:
-                difficultyColor = easyDifficultyColor;
+                difficultyColor = colorsConfig != null ? colorsConfig.EasyColor : Color.green;
                 difficultySprite = easyDifficultySprite;
                 break;
             case GameManager.Difficulty.Medium:
-                difficultyColor = mediumDifficultyColor;
+                difficultyColor = colorsConfig != null ? colorsConfig.MediumColor : Color.yellow;
                 difficultySprite = mediumDifficultySprite;
                 break;
             case GameManager.Difficulty.Hard:
-                difficultyColor = hardDifficultyColor;
+                difficultyColor = colorsConfig != null ? colorsConfig.HardColor : Color.red;
                 difficultySprite = hardDifficultySprite;
                 break;
         }
@@ -142,21 +140,21 @@ public class PanelScoreManager : MonoBehaviour
 
     public void UpdateDifficultyUI(GameManager.Difficulty difficulty)
     {
-        Color difficultyColor = mediumDifficultyColor;
+        Color difficultyColor = colorsConfig != null ? colorsConfig.MediumColor : Color.white;
         Sprite difficultySprite = mediumDifficultySprite;
 
         switch (difficulty)
         {
             case GameManager.Difficulty.Easy:
-                difficultyColor = easyDifficultyColor;
+                difficultyColor = colorsConfig != null ? colorsConfig.EasyColor : Color.green;
                 difficultySprite = easyDifficultySprite;
                 break;
             case GameManager.Difficulty.Medium:
-                difficultyColor = mediumDifficultyColor;
+                difficultyColor = colorsConfig != null ? colorsConfig.MediumColor : Color.yellow;
                 difficultySprite = mediumDifficultySprite;
                 break;
             case GameManager.Difficulty.Hard:
-                difficultyColor = hardDifficultyColor;
+                difficultyColor = colorsConfig != null ? colorsConfig.HardColor : Color.red;
                 difficultySprite = hardDifficultySprite;
                 break;
         }

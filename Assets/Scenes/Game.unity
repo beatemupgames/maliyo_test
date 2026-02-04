@@ -5782,9 +5782,7 @@ MonoBehaviour:
   panelScoreDifficultyIcon: {fileID: 1751365758}
   textMode: {fileID: 396274135}
   difficultyIcon: {fileID: 1751365758}
-  easyDifficultyColor: {r: 0.184, g: 0.718, b: 0.255, a: 1}
-  mediumDifficultyColor: {r: 0.992, g: 0.655, b: 0.016, a: 1}
-  hardDifficultyColor: {r: 0.996, g: 0.373, b: 0.337, a: 1}
+  colorsConfig: {fileID: 11400000, guid: 4e462a3f37e804572a79aee0271e4e9a, type: 2}
   easyDifficultySprite: {fileID: 21300000, guid: d48d3f7bdda4a4f52b972be6599cadf6, type: 3}
   mediumDifficultySprite: {fileID: 21300000, guid: f94128d51845f4dd7af94f338bc64486, type: 3}
   hardDifficultySprite: {fileID: 21300000, guid: 03c1c244afe2448dc81b6859457fa95d, type: 3}
@@ -6767,6 +6765,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1596f24f20fd544c093c54bd8b542757, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  difficulty: 0
+  menuSceneName: Menu
+  enableDebugLogs: 0
+  timeBetweenButtons: 0.6
+  buttonPressDuration: 0.4
+  simultaneousButtonDelay: 0.05
+  hardModeRotationSpeed: 30
+  scoreHighlightColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  scoreAnimationDuration: 0.3
+  scoreScaleMultiplier: 1.3
+  scoreGameOverColor: {r: 1, g: 0, b: 0, a: 1}
+  scoreGameOverTransitionDuration: 0.2
+  scoreGameOverHoldDuration: 0.6
+  currentState: 0
+  sequence: []
+  currentPlayerStep: 0
+  currentRound: 0
+  playerScore: 0
   easyButtons:
   - {fileID: 687219394}
   - {fileID: 114230527}
@@ -6783,23 +6799,6 @@ MonoBehaviour:
   panelScoreManager: {fileID: 1648219239}
   simonEasyGameObject: {fileID: 2103077291}
   simonNormalGameObject: {fileID: 1532784419}
-  difficulty: 0
-  menuSceneName: Menu
-  timeBetweenButtons: 0.6
-  buttonPressDuration: 0.4
-  simultaneousButtonDelay: 0.05
-  hardModeRotationSpeed: 30
-  scoreHighlightColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  scoreAnimationDuration: 0.3
-  scoreScaleMultiplier: 1.3
-  scoreGameOverColor: {r: 1, g: 0, b: 0, a: 1}
-  scoreGameOverTransitionDuration: 0.2
-  scoreGameOverHoldDuration: 0.6
-  currentState: 0
-  sequence: []
-  currentPlayerStep: 0
-  currentRound: 0
-  playerScore: 0
 --- !u!4 &1984510731
 Transform:
   m_ObjectHideFlags: 0
