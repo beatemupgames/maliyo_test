@@ -23,13 +23,16 @@ public class PanelScoreManager : MonoBehaviour
     [Header("Audio")]
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip panelScoreSound;
+    [SerializeField] private AudioClip clickSound;
 
     private Coroutine triangle1RotationCoroutine;
     private Coroutine triangle2RotationCoroutine;
+    private GameManager gameManager;
 
     private void Awake()
     {
         InitializeTriangles();
+        gameManager = FindFirstObjectByType<GameManager>();
     }
 
     private void InitializeTriangles()
@@ -131,6 +134,14 @@ public class PanelScoreManager : MonoBehaviour
         if (audioSource != null && panelScoreSound != null)
         {
             audioSource.PlayOneShot(panelScoreSound);
+        }
+    }
+
+    public void PlayClickSound()
+    {
+        if (audioSource != null && clickSound != null)
+        {
+            audioSource.PlayOneShot(clickSound);
         }
     }
 
@@ -349,5 +360,24 @@ public class PanelScoreManager : MonoBehaviour
         }
 
         canvasGroup.alpha = 1f;
+    }
+
+    // Button callbacks
+    public void OnHomeButton()
+    {
+        PlayClickSound();
+        if (gameManager != null)
+        {
+            gameManager.OnHomeButtonPressed();
+        }
+    }
+
+    public void OnPlayAgainButton()
+    {
+        PlayClickSound();
+        if (gameManager != null)
+        {
+            gameManager.OnPlayAgainButtonPressed();
+        }
     }
 }

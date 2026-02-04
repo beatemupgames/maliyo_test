@@ -10,10 +10,14 @@ public class PanelGameOverManager : MonoBehaviour
     [Header("Audio")]
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip gameOverSound;
+    [SerializeField] private AudioClip clickSound;
+
+    private GameManager gameManager;
 
     private void Awake()
     {
         // Panel starts inactive, no initialization needed
+        gameManager = FindFirstObjectByType<GameManager>();
     }
 
     public void PlayGameOverSound()
@@ -21,6 +25,14 @@ public class PanelGameOverManager : MonoBehaviour
         if (audioSource != null && gameOverSound != null)
         {
             audioSource.PlayOneShot(gameOverSound);
+        }
+    }
+
+    public void PlayClickSound()
+    {
+        if (audioSource != null && clickSound != null)
+        {
+            audioSource.PlayOneShot(clickSound);
         }
     }
 
@@ -76,5 +88,24 @@ public class PanelGameOverManager : MonoBehaviour
     public void HidePanel()
     {
         gameObject.SetActive(false);
+    }
+
+    // Button callbacks
+    public void OnRestartButton()
+    {
+        PlayClickSound();
+        if (gameManager != null)
+        {
+            gameManager.RestartGame();
+        }
+    }
+
+    public void OnNoThanksButton()
+    {
+        PlayClickSound();
+        if (gameManager != null)
+        {
+            gameManager.OnNoThanksButtonPressed();
+        }
     }
 }

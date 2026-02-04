@@ -141,10 +141,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject simonEasyGameObject;
     [SerializeField] private GameObject simonNormalGameObject;
 
-    [Header("Audio")]
-    [SerializeField] private AudioSource audioSource;
-    [SerializeField] private AudioClip clickSound;
-
     [Header("Game Settings")]
     [SerializeField] private Difficulty difficulty = Difficulty.Medium;
     [SerializeField] private string menuSceneName = "Menu";
@@ -561,11 +557,10 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void OnNoThanksButton()
+    public void OnNoThanksButtonPressed()
     {
         if (currentState == GameState.GameOver)
         {
-            PlayClickSound();
             StartCoroutine(NoThanksSequenceCoroutine());
         }
     }
@@ -1004,23 +999,14 @@ public class GameManager : MonoBehaviour
     }
 
 
-    public void OnHomeButton()
+    public void OnHomeButtonPressed()
     {
-        PlayClickSound();
         SceneManager.LoadScene(menuSceneName);
     }
 
-    public void OnPlayAgainButton()
+    public void OnPlayAgainButtonPressed()
     {
-        PlayClickSound();
         StartNewGame();
     }
 
-    private void PlayClickSound()
-    {
-        if (audioSource != null && clickSound != null)
-        {
-            audioSource.PlayOneShot(clickSound);
-        }
-    }
 }

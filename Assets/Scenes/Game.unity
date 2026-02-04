@@ -659,8 +659,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1984510730}
-        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+      - m_Target: {fileID: 706976544}
+        m_TargetAssemblyTypeName: PanelGameOverManager, Assembly-CSharp
         m_MethodName: OnNoThanksButton
         m_Mode: 1
         m_Arguments:
@@ -3374,6 +3374,7 @@ MonoBehaviour:
   fadeOutDuration: 0.15
   audioSource: {fileID: 894645331}
   gameOverSound: {fileID: 8300000, guid: 6cdb0445bb50e4a88a24d5d1fa6c2024, type: 3}
+  clickSound: {fileID: 8300000, guid: 3fadf7fd60c314516840178e20d239b9, type: 3}
 --- !u!1 &886101418
 GameObject:
   m_ObjectHideFlags: 0
@@ -5719,8 +5720,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1984510730}
-        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+      - m_Target: {fileID: 1648219239}
+        m_TargetAssemblyTypeName: PanelScoreManager, Assembly-CSharp
         m_MethodName: OnHomeButton
         m_Mode: 1
         m_Arguments:
@@ -6522,6 +6523,7 @@ MonoBehaviour:
   triangleFadeDuration: 0.3
   audioSource: {fileID: 1587215003}
   panelScoreSound: {fileID: 8300000, guid: c16d0c424eb204e6abed19b2038d815b, type: 3}
+  clickSound: {fileID: 8300000, guid: 3fadf7fd60c314516840178e20d239b9, type: 3}
 --- !u!1 &1688587906
 GameObject:
   m_ObjectHideFlags: 0
@@ -7686,8 +7688,6 @@ MonoBehaviour:
   panelScoreManager: {fileID: 1648219239}
   simonEasyGameObject: {fileID: 2103077291}
   simonNormalGameObject: {fileID: 1532784419}
-  audioSource: {fileID: 894645331}
-  clickSound: {fileID: 8300000, guid: 3fadf7fd60c314516840178e20d239b9, type: 3}
   difficulty: 0
   menuSceneName: Menu
   easyDifficultyColor: {r: 0.184, g: 0.718, b: 0.255, a: 1}
@@ -7843,8 +7843,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1984510730}
-        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+      - m_Target: {fileID: 1648219239}
+        m_TargetAssemblyTypeName: PanelScoreManager, Assembly-CSharp
         m_MethodName: OnPlayAgainButton
         m_Mode: 1
         m_Arguments:
