@@ -137,18 +137,31 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject simonEasyGameObject;
     [SerializeField] private GameObject simonNormalGameObject;
 
-    [Header("Game Settings")]
+    [Header("General Settings")]
     [SerializeField] private Difficulty difficulty = Difficulty.Medium;
     [SerializeField] private string menuSceneName = "Menu";
+
+    [Header("Sequence & Button Timing")]
     [SerializeField] private float timeBetweenButtons = 0.6f;
     [SerializeField] private float buttonPressDuration = 0.4f;
-    [SerializeField] private float scoreWaitDuration = 1.0f;
-    [SerializeField] private float scoreFadeInDuration = 0.3f;
     [SerializeField] private float simultaneousButtonDelay = 0.05f;
+
+    [Header("Hard Mode")]
+    [SerializeField] private float hardModeRotationSpeed = 30f;
+
+    [Header("Score Animation")]
+    [SerializeField] private Color scoreHighlightColor = Color.yellow;
     [SerializeField] private float scoreAnimationDuration = 0.3f;
     [SerializeField] private float scoreScaleMultiplier = 1.3f;
-    [SerializeField] private Color scoreHighlightColor = Color.yellow;
-    [SerializeField] private float hardModeRotationSpeed = 30f;
+
+    [Header("Game Over Score Animation")]
+    [SerializeField] private Color scoreGameOverColor = Color.red;
+    [SerializeField] private float scoreGameOverTransitionDuration = 0.2f;
+    [SerializeField] private float scoreGameOverHoldDuration = 0.6f;
+
+    [Header("Score Screen Transition")]
+    [SerializeField] private float scoreWaitDuration = 1.0f;
+    [SerializeField] private float scoreFadeInDuration = 0.3f;
 
     [Header("Game State")]
     [SerializeField] private GameState currentState = GameState.Idle;
@@ -788,24 +801,22 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator ScoreTextRedFlashCoroutine()
     {
-        float transitionDuration = 0.2f;
-        float holdDuration = 0.6f;
         float elapsedTime = 0f;
 
         // Fade to red
-        while (elapsedTime < transitionDuration)
+        while (elapsedTime < scoreGameOverTransitionDuration)
         {
             elapsedTime += Time.deltaTime;
-            float t = elapsedTime / transitionDuration;
+            float t = elapsedTime / scoreGameOverTransitionDuration;
 
             if (scoreText2D != null)
             {
-                scoreText2D.color = Color.Lerp(scoreText2DOriginalColor, Color.red, t);
+                scoreText2D.color = Color.Lerp(scoreText2DOriginalColor, scoreGameOverColor, t);
             }
 
             if (scoreNumberText2D != null)
             {
-                scoreNumberText2D.color = Color.Lerp(scoreNumberText2DOriginalColor, Color.red, t);
+                scoreNumberText2D.color = Color.Lerp(scoreNumberText2DOriginalColor, scoreGameOverColor, t);
             }
 
             yield return null;
@@ -814,32 +825,32 @@ public class GameManager : MonoBehaviour
         // Ensure full red
         if (scoreText2D != null)
         {
-            scoreText2D.color = Color.red;
+            scoreText2D.color = scoreGameOverColor;
         }
 
         if (scoreNumberText2D != null)
         {
-            scoreNumberText2D.color = Color.red;
+            scoreNumberText2D.color = scoreGameOverColor;
         }
 
         // Hold red color
-        yield return new WaitForSeconds(holdDuration);
+        yield return new WaitForSeconds(scoreGameOverHoldDuration);
 
         // Fade back to original colors
         elapsedTime = 0f;
-        while (elapsedTime < transitionDuration)
+        while (elapsedTime < scoreGameOverTransitionDuration)
         {
             elapsedTime += Time.deltaTime;
-            float t = elapsedTime / transitionDuration;
+            float t = elapsedTime / scoreGameOverTransitionDuration;
 
             if (scoreText2D != null)
             {
-                scoreText2D.color = Color.Lerp(Color.red, scoreText2DOriginalColor, t);
+                scoreText2D.color = Color.Lerp(scoreGameOverColor, scoreText2DOriginalColor, t);
             }
 
             if (scoreNumberText2D != null)
             {
-                scoreNumberText2D.color = Color.Lerp(Color.red, scoreNumberText2DOriginalColor, t);
+                scoreNumberText2D.color = Color.Lerp(scoreGameOverColor, scoreNumberText2DOriginalColor, t);
             }
 
             yield return null;
