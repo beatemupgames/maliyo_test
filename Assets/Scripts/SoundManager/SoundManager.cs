@@ -16,10 +16,6 @@ public class SoundManager : MonoBehaviour
     {
         get
         {
-            if (instance == null)
-            {
-                Debug.LogError("SoundManager instance is null! Make sure there's a SoundManager in the scene.");
-            }
             return instance;
         }
     }
