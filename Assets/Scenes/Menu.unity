@@ -642,7 +642,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &381031544
 RectTransform:
   m_ObjectHideFlags: 0
@@ -941,8 +941,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1edfe01f9bbc348eca430ee177b25251, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fadeInDuration: 0.5
-  fadeOutDuration: 0.5
+  fadeInDuration: 0.25
+  fadeOutDuration: 0.25
   fadeColor: {r: 0, g: 0, b: 0, a: 1}
   fadeCurve:
     serializedVersion: 2

@@ -82,6 +82,9 @@ public class SceneFadeManager : MonoBehaviour
         {
             fadeCanvas.sortingOrder = 999;
             fadeCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+
+            // Activate canvas at runtime (can be disabled in editor for easier editing)
+            fadeCanvas.gameObject.SetActive(true);
         }
 
         // Start with fade image invisible
