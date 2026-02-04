@@ -9,10 +9,10 @@ A faithful replica of the "Sound Memory" game from Maliyo Games' "Offline Games"
 ## 📸 Screenshots
 
 <p align="center">
-  <img src="Screenshots/menu.png" width="23%" alt="Main Menu" />
-  <img src="Screenshots/gameplay.png" width="23%" alt="Gameplay" />
-  <img src="Screenshots/gameover.png" width="23%" alt="Game Over" />
-  <img src="Screenshots/ranking.png" width="23%" alt="Score Ranking" />
+  <img src="Assets/Screenshots/menu.png" width="23%" alt="Main Menu" />
+  <img src="Assets/Screenshots/gameplay.png" width="23%" alt="Gameplay" />
+  <img src="Assets/Screenshots/gameover.png" width="23%" alt="Game Over" />
+  <img src="Assets/Screenshots/ranking.png" width="23%" alt="Score Ranking" />
 </p>
 
 ## ✨ Features
