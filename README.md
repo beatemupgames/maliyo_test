@@ -69,10 +69,38 @@ Assets/
 
 ## 🚀 Setup
 
-### Requirements
-- Unity 6000.0.58f2 or later
+### Play the Build (Recommended)
+1. Download the latest release ZIP from the [Releases](../../releases) section
+2. Extract the ZIP file
+3. Run a local web server in the extracted folder:
 
-### Steps
+   **Option A - Python (if installed):**
+   ```bash
+   # Python 3
+   python -m http.server 8000
+
+   # Python 2
+   python -m SimpleHTTPServer 8000
+   ```
+
+   **Option B - Node.js (if installed):**
+   ```bash
+   npx http-server -p 8000
+   ```
+
+   **Option C - VS Code:**
+   - Install the "Live Server" extension
+   - Right-click on `index.html` and select "Open with Live Server"
+
+4. Open your browser and go to `http://localhost:8000`
+5. Start playing!
+
+> **Note:** WebGL builds require a web server due to browser CORS restrictions. Opening `index.html` directly won't work.
+
+### Open in Unity Editor
+**Requirements:** Unity 6000.0.58f2 or later
+
+**Steps:**
 1. Clone the repository
 2. Open the project in Unity Hub
 3. Open `Assets/Scenes/Menu.unity`
