@@ -6,6 +6,9 @@ A technical test project for the Unity Developer position at Maliyo Games.
 
 A faithful replica of the "Sound Memory" game from Maliyo Games' "Offline Games" collection. This implementation recreates the classic "Simon Says" memory game experience in Unity, featuring three difficulty modes, persistent high score tracking, and polished UI/UX.
 
+### 🎮 [Play in Browser](https://sleepyjohnestes.itch.io/maliyo-test)
+**Password required:** `maliyo`
+
 <p align="center">
   <img src="Assets/Screenshots/animated_menu.gif" alt="Game Demo" />
 </p>
